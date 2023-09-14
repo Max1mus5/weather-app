@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './ResultsList.css';
 
 const ResultsList = ({ results }) => {
   const [temp, setTemp] = useState([]);
@@ -41,17 +42,26 @@ const ResultsList = ({ results }) => {
     setLast_updated(lastupdate);
   };
 
+
   return (
-    <div className="results-list">
-      <ul>
-        {results.map((result, index) => (
-          <li key={result.id}>
-            {result.name},{result.adm_area1}, {result.country}, {temp[index]}° ----last updated: {last_updated[index]}
-          </li>
-        ))}
-      </ul>
+    <div className='Container'>
+      {results.length > 0 ? (
+        <div className="results-list">
+          <ul className='listContainer'>
+            {results.map((result, index) => (
+              <li key={result.id} className='listElement'>
+                {result.name},{result.adm_area1}, {result.country}, {temp[index]}° ----last updated: {last_updated[index]}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </div>
   );
+  
+  
+  
+        
 };
 
 export default ResultsList;
