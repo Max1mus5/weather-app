@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ResultsList.css';
+import sunnyIcon from '../img/Clouds/sunny.png';
+import cloudyIcon from '../img/Clouds/template.png';
+import snowIcon from '../img/Clouds/snow.png';
+import calidIcon from '../img/Clouds/calid.png';
+import normalIcon from '../img/Clouds/normal.png';
+
 
 const ResultsList = ({ results }) => {
   const [temp, setTemp] = useState([]);
@@ -43,16 +49,45 @@ const ResultsList = ({ results }) => {
   };
 
 
+  const getWeatherIcon = (temperature) => {
+    console.log("Temperature:", temperature); // Add this line
+  
+    if (temperature > 30) {
+      console.log("Sunny Icon"); // Add this line
+      return sunnyIcon;
+    } else if (temperature > 25 && temperature <= 30) {
+      console.log("Calid Icon"); // Add this line
+      return calidIcon;
+    } else if (temperature > 18 && temperature <= 25) {
+      console.log("Normal Icon"); // Add this line
+      return normalIcon;
+    } else if (temperature > 10 && temperature <= 18) {
+      console.log("Cloudy Icon"); // Add this line
+      return cloudyIcon;
+    } else if(temperature <= 10) {
+      console.log("Snow Icon"); // Add this line
+      return snowIcon;
+    }
+  };
+  
+
   return (
     <div className='Container'>
       {results.length > 0 ? (
         <div className="results-list">
           <ul className='listContainer'>
-            {results.map((result, index) => (
-              <li key={result.id} className='listElement'>
-                {result.name},{result.adm_area1}, {result.country}, {temp[index]}° ----last updated: {last_updated[index]}
-              </li>
-            ))}
+          {results.map((result, index) => (
+            <li key={result.id} className='listElement'>
+              <div className='location'>
+              <span className="country">{result.country}</span>
+              <span className="city">{result.name},{result.adm_area1}</span>
+              </div>
+              <div className="temperatureContainer">
+                <img src={getWeatherIcon(temp[index])} alt="Temperature" className="temperatureImage" />
+                <span className="temperatureValue">{temp[index]}°</span>
+              </div>
+            </li>
+          ))}
           </ul>
         </div>
       ) : null}
