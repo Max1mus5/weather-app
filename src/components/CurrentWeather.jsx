@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CurrentWeather.css';
 import axios from 'axios';
 
+import loadingIcon from '../img/loadicon.svg';
 import newmoon from '../img/Final View/MoonPhases/new-moon.png';
 import waxingCrecent1 from '../img/Final View/MoonPhases/waxing-crescent-moon1.png';
 import fistQuarter from '../img/Final View/MoonPhases/quarter-moon1.png';
@@ -15,26 +16,11 @@ const CurrentWeather = ({ data, location, temperature }) => {
   const [loading, setLoading] = useState(false);
   const [astroInfo, setAstroInfo] = useState(null);
   const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(true); // Estado para controlar si el componente está abierto
 
-  const componentRef = useRef(null); // Ref para acceder al componente DOM
 
   useEffect(() => {
     setLoading(true);
     getAstroInfo();
-
-    // Agregar un manejador de eventos de clic al documento para cerrar el componente cuando se hace clic fuera de él
-    const handleClickOutside = (event) => {
-      if (componentRef.current && !componentRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
   }, []);
 
 
@@ -62,6 +48,7 @@ const CurrentWeather = ({ data, location, temperature }) => {
       const response = await axios.request(options);
       if (response.data) {
         setAstroInfo(response.data);
+        console.log("ASTROINFO: ", response.data);
       }
     } catch (error) {
       setError('Error al obtener información astronómica');
@@ -70,9 +57,50 @@ const CurrentWeather = ({ data, location, temperature }) => {
     }
   }
 
+  const getMoonPhaseIcon = (phaseName) => {
+    switch (phaseName) {
+      case 'New Moon':
+        return (<div className='moonImg'>
+          <img src= {newmoon} alt='New Moon'/>
+        </div>);
+      case 'Waxing Crescent':
+        return (<div className='moonImg'>
+          <img src= {waxingCrecent1} alt='Waxing Crescent'/>
+        </div>);
+      case 'First Quarter':
+        return (<div className='moonImg'>
+          <img src= {fistQuarter} alt='First Quarter'/>
+        </div>);
+      case 'Waxing Gibbous':
+        return (<div className='moonImg'>
+          <img src= {waxingGibbous1} alt='Waxing Gibbous'/>
+        </div>);
+      case 'Full Moon':
+        return (<div className='moonImg'>
+          <img src= {fullMoon} alt='Full Moon'/>
+        </div>);
+      case 'Waning Gibbous':
+        return (<div className='moonImg'>
+          <img src= {waningGibboues2} alt='Waning Gibbous'/>
+        </div>);
+      case 'Last Quarter':
+        return (<div className='moonImg'>
+          <img src= {lastQuarter} alt='Last Quarter'/>
+        </div>);
+      case 'Waning Crescent':
+        return (<div className='moonImg'>
+          <img src= {waningCrecent} alt='Waning Crescent'/>
+        </div>);
+      default:
+        return null;
+    }
+  }
+
+
   return (
     <div className="current-weather">
-      {loading && <p>Loading...</p>}
+      {loading && <div>
+        <img src={loadingIcon} alt="Loading" className='loading-image'/></div>}
       {error && <p>{error}</p>}
       {astroInfo && (
         <div className="weather-details">
@@ -88,7 +116,7 @@ const CurrentWeather = ({ data, location, temperature }) => {
             </div>
           )}
           <div>
-            <strong>Moon Phase:</strong> {astroInfo.moon.illumination.phaseName}
+            <strong>Moon Phase:</strong> {getMoonPhaseIcon(astroInfo.moon.illumination.phaseName)}
           </div>
           <div>
             <strong>Sunrise:</strong> {astroInfo.sun.rise}

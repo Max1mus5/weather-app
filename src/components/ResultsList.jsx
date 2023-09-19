@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ResultsList.css';
+
+import loading from '../img/loadicon.svg';
 import sunnyIcon from '../img/Clouds/sunny.png';
 import cloudyIcon from '../img/Clouds/template.png';
 import snowIcon from '../img/Clouds/snow.png';
@@ -12,7 +14,8 @@ const ResultsList = ({ results }) => {
   const [temp, setTemp] = useState([]);
   const [last_updated, setLast_updated] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [info, setinfo]=useState([]);
+  const [info, setInfo] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Estado de carga
 
   useEffect(() => {
     if (results.length > 0) {
@@ -43,15 +46,17 @@ const ResultsList = ({ results }) => {
         console.error(error);
       }
     }
-    
+
     setTemp(tempArray);
     setLast_updated(lastupdate);
-    setinfo(infoComplet);
-    console.log("all info:",infoComplet);
+    setInfo(infoComplet);
+    setIsLoading(false); // Marca que los datos están listos
   };
 
   const getWeatherIcon = (temperature) => {
-    if (temperature > 30) {
+    if (temperature === null || temperature === undefined) {
+      return {}; // Muestra "Loading..." mientras se carga la temperatura
+    } else if (temperature > 30) {
       return sunnyIcon;
     } else if (temperature > 25 && temperature <= 30) {
       return calidIcon;
@@ -69,12 +74,15 @@ const ResultsList = ({ results }) => {
   };
 
   return (
-    
     <div className='Container'>
-      {results.length > 0 ? (
-        
+      {isLoading ? ( // Mostrar el GIF de carga mientras isLoading es verdadero
+        <div className="loading-container">
+          <img src={loading} alt="Loading" className="loading-image" />
+          <p>Loading...</p>
+        </div>
+      ) : (
+        // Mostrar resultados cuando isLoading es falso
         <div className="results-list">
-          <p>Please Wait to load the Icons</p>
           <ul className='listContainer'>
             {results.map((result, index) => (
               <li key={result.id} className='listElement' onClick={() => handleItemClick(index)}>
@@ -90,10 +98,10 @@ const ResultsList = ({ results }) => {
             ))}
           </ul>
         </div>
-      ) : null}
+      )}
 
       {selectedItem !== null && (
-        <CurrentWeather data={info[selectedItem]} location={results[selectedItem]}temperature = {temp[selectedItem]} />
+        <CurrentWeather data={info[selectedItem]} location={results[selectedItem]} temperature={temp[selectedItem]} />
       )}
     </div>
   );

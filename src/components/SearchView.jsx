@@ -24,7 +24,7 @@ const SearchView = () => {
           language: 'en'
         },
         headers: {
-          'X-RapidAPI-Key': '6b4a4807e5mshfd01d0925c6d1adp16c76djsnb773fc266756',
+          'X-RapidAPI-Key': 'a2e2a99f32mshe71d53f98ecd797p1b14cdjsnc906495e9294',
           'X-RapidAPI-Host': 'ai-weather-by-meteosource.p.rapidapi.com'
         }
       });
@@ -58,7 +58,9 @@ const SearchView = () => {
           <span className="material-symbols-outlined sendIcon">send</span>
         </button>
       </form>
-      <ResultsList results={searchResults} className='resultsList' />
+      {searchResults.length > 0 && ( // Mostrar ResultsList solo si hay resultados
+        <ResultsList results={searchResults} className='resultsList' />
+      )}
     </div>
   );
 };
