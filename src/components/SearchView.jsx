@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import ResultsList from './ResultsList';
 import './SearchView.css';
+import './CurrentWeather.css';
 
 const SearchView = () => {
   const [searchQuery, setSearchQuery] = useState('');

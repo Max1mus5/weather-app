@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './CurrentWeather.css';
 import axios from 'axios';
-
 import loadingIcon from '../img/loadicon.svg';
+import earthImage from '../img/earth.png';
 import newmoon from '../img/Final View/MoonPhases/new-moon.png';
 import waxingCrecent1 from '../img/Final View/MoonPhases/waxing-crescent-moon1.png';
 import fistQuarter from '../img/Final View/MoonPhases/quarter-moon1.png';
@@ -12,17 +12,28 @@ import waningGibboues2 from '../img/Final View/MoonPhases/waning-gibbous-moon2.p
 import lastQuarter from '../img/Final View/MoonPhases/quarter-moon2.png';
 import waningCrecent from '../img/Final View/MoonPhases/waning-crescent-moon2.png';
 
-const CurrentWeather = ({ data, location, temperature }) => {
+import drop from '../img/Final View/PrincipalWeather/water.png';
+
+import { CloseButton } from 'react-bootstrap';
+
+const CurrentWeather = ({ data, location, temperature, state, close }) => {
   const [loading, setLoading] = useState(false);
   const [astroInfo, setAstroInfo] = useState(null);
   const [error, setError] = useState(null);
+  const [showCurrentWeather] = useState(state);
+  const [showMessage, setShowMessage] = useState(false);
 
+
+
+  
+  
+  
+  
 
   useEffect(() => {
     setLoading(true);
     getAstroInfo();
   }, []);
-
 
   /* get astro info from Meteosource */
   const getAstroInfo = async () => {
@@ -35,7 +46,7 @@ const CurrentWeather = ({ data, location, temperature }) => {
       url: 'https://wyjyt-geo-calculate.p.rapidapi.com/Sky',
       headers: {
         'content-type': 'application/json',
-        'X-RapidAPI-Key': '6b4a4807e5mshfd01d0925c6d1adp16c76djsnb773fc266756', 
+        'X-RapidAPI-Key': 'a2e2a99f32mshe71d53f98ecd797p1b14cdjsnc906495e9294',
         'X-RapidAPI-Host': 'wyjyt-geo-calculate.p.rapidapi.com'
       },
       data: {
@@ -43,7 +54,6 @@ const CurrentWeather = ({ data, location, temperature }) => {
         coordinate: `${astroLat} ${astroLon}`
       }
     };
-
     try {
       const response = await axios.request(options);
       if (response.data) {
@@ -51,7 +61,11 @@ const CurrentWeather = ({ data, location, temperature }) => {
         console.log("ASTROINFO: ", response.data);
       }
     } catch (error) {
-      setError('Error al obtener información astronómica');
+      setError('Error al obtener información astronómica\nIntente nuevamente más tarde');
+      /* wait 2 segunds and calls close */
+      setTimeout(() => {
+        close();
+      }, 2000);
     } finally {
       setLoading(false);
     }
@@ -96,47 +110,150 @@ const CurrentWeather = ({ data, location, temperature }) => {
     }
   }
 
+  /* copy latitude and longitude on clipboard in the format: "lat , lon"*/
+  // ...
+
+/* copy latitude and longitude on clipboard in the format: "lat , lon"*/
+const copyCoordinates = () => {
+  let lat = data.location.lat;
+  let lon = data.location.lon;
+  let coordinates = `${lat} , ${lon}`;
+  navigator.clipboard.writeText(coordinates)
+    .then(() => {
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 2000); // Reiniciar el estado después de 2 segundos
+    })
+    .catch((error) => {
+      console.error('Error On Copy:', error);
+    });
+}
+
+<div className='latitudelongitude' onClick={copyCoordinates}>
+  <div>
+    <strong>Latitude:</strong> {data.location.lat}
+  </div>
+  <div>
+    <strong>Longitude:</strong> {data.location.lon}
+  </div>
+  {showMessage && <p className="copy-message">Click to copy</p>}
+</div>
+
+
+const subtractHoursAndMinutes = (time, hours, minutes) => {
+  const [hh, mm, ss] = time.split(':').map(Number);
+  const totalMinutes = hh * 60 + mm - (hours * 60 + minutes);
+  const newHH = Math.floor(totalMinutes / 60);
+  const newMM = totalMinutes % 60;
+  return `${newHH.toString().padStart(2, '0')}:${newMM.toString().padStart(2, '0')}:${ss}`;
+};
 
   return (
-    <div className="current-weather">
-      {loading && <div>
-        <img src={loadingIcon} alt="Loading" className='loading-image'/></div>}
-      {error && <p>{error}</p>}
-      {astroInfo && (
-        <div className="weather-details">
-          <div>
-            <strong>Location:</strong> {location.name}, {location.adm_area1}, {location.country}
-          </div>
-          <div>
-            <strong>Temperature:</strong> {temperature}°C
-          </div>
-          {data && data.current && (
-            <div>
-              <strong>Humidity:</strong> {data.current.humidity}%
-            </div>
-          )}
-          <div>
-            <strong>Moon Phase:</strong> {getMoonPhaseIcon(astroInfo.moon.illumination.phaseName)}
-          </div>
-          <div>
-            <strong>Sunrise:</strong> {astroInfo.sun.rise}
-          </div>
-          <div>
-            <strong>Sunset:</strong> {astroInfo.sun.set}
-          </div>
-          <div>
-            <strong>Pressure:</strong> {data.current.pressure_in} hPa
-          </div>
-          <div>
-            <strong>Latitude:</strong> {data.location.lat}
-          </div>
-          <div>
-            <strong>Longitude:</strong> {data.location.lon}
-          </div>
+    showCurrentWeather ? (
+      <div className="current-weather">
+        <div>
+          <img src={earthImage} alt="earth" className='earth-image move' />
         </div>
-      )}
-    </div>
+        {loading && (
+          <div>
+            <img src={loadingIcon} alt="Loading" className='loading-image loadimage'/>
+          </div>
+        )}
+        {error && <p>{error}</p>}
+        {astroInfo && (
+          <div className="weather-details">
+            <div className='ubicationCITY'>
+              {location.name}, {location.adm_area1}, {location.country}
+            </div>
+            <div className='principalInfo'>
+              <div className='tempIMG'>
+                <div className='imageCondition'>
+                  <img src={data.current.condition.icon}/>
+                  <p className='textCondition'>{data.current.condition.text}</p>
+                </div>
+                <div className='Temperature'>
+                  {temperature}°C
+                </div>
+              </div>
+              <div className='complementInfo'>
+                <div className='uv'>
+                  Uv: {data.current.uv}
+                </div>
+                <div className='drop'>
+                  <img src={drop}/> {data.current.humidity}%
+                </div>
+                <div className='cloud'>
+                  Cloud: {data.current.cloud}%
+                </div>
+                <div className='feelsLike'>
+                  Feels Like: {data.current.feelslike_c}°C
+                </div>
+                <div className='gust'>
+                  Gust: {data.current.gust_kph} kph
+                </div>
+                <div className='pressure'>
+                  Pressure: {data.current.pressure_in} in
+                </div>
+                <div className='wind'>
+                  Wind: {data.current.wind_kph} kph {data.current.wind_dir}
+                </div>
+                <div className='visibility'>
+                  Visibility: {data.current.vis_km} km
+                </div>
+                <div className='precipitation'>
+                  Precipitation: {data.current.precip_mm} mm
+                </div>
+              </div> 
+              <div className='latitudelongitude' onClick={copyCoordinates}>
+                <div>
+                  <strong>Latitude:</strong> {data.location.lat}
+                </div>
+                <div>
+                  <strong>Longitude:</strong> {data.location.lon}
+                </div>
+                {showMessage && <p className="copy-message">Copied!</p>}
+              </div>
+              <div className='lastUpdate'> 
+                <strong>Last Update: {data.current.last_updated}</strong>
+              </div>
+            </div>
+
+            <div className='extraInfo'>
+              <div className='moon'>
+                <strong className='titlePhase'>Moon Phase:</strong> {getMoonPhaseIcon(astroInfo.moon.illumination.phaseName)}
+                <p className='phaseName'>{astroInfo.moon.illumination.phaseName}</p>
+              </div>
+              <div>
+                <strong>Sunrise:</strong> {subtractHoursAndMinutes(astroInfo.sun.rise.split('T')[1], 5, 29)}
+              </div>
+              <div>
+                <strong>Sunset:</strong> {subtractHoursAndMinutes(astroInfo.sun.set.split('T')[1], 5, 21)}
+              </div>
+            </div>
+
+          </div>
+        )}
+        <CloseButton className='closeButton' onClick={() => {
+          close();
+          console.log("closed : ", showCurrentWeather);
+        }}>
+          <span className="material-symbols-outlined">close</span>
+        </CloseButton>
+
+      </div>
+    ) : null
   );
+  
 };
 
 export default CurrentWeather;
+
+
+
+
+
+
+
+
+

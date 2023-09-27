@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ResultsList.css';
-
 import loading from '../img/loadicon.svg';
 import sunnyIcon from '../img/Clouds/sunny.png';
 import cloudyIcon from '../img/Clouds/template.png';
@@ -15,7 +14,8 @@ const ResultsList = ({ results }) => {
   const [last_updated, setLast_updated] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [info, setInfo] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Estado de carga
+  const [isLoading, setIsLoading] = useState(true);
+  const [showCurrentWeather, setShowCurrentWeather] = useState(true); // Change initial state to false
 
   useEffect(() => {
     if (results.length > 0) {
@@ -27,6 +27,7 @@ const ResultsList = ({ results }) => {
     const tempArray = [];
     const lastupdate = [];
     const infoComplet = [];
+
     for (let i = 0; i < results.length; i++) {
       try {
         const response = await axios.get(`https://weatherapi-com.p.rapidapi.com/current.json`, {
@@ -38,10 +39,10 @@ const ResultsList = ({ results }) => {
             'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com'
           }
         });
+
         tempArray.push(response.data.current.temp_c);
         lastupdate.push(response.data.current.last_updated);
         infoComplet.push(response.data);
-        
       } catch (error) {
         console.error(error);
       }
@@ -50,7 +51,8 @@ const ResultsList = ({ results }) => {
     setTemp(tempArray);
     setLast_updated(lastupdate);
     setInfo(infoComplet);
-    setIsLoading(false); // Marca que los datos están listos
+    console.log("info Complete",infoComplet);
+    setIsLoading(false);
   };
 
   const getWeatherIcon = (temperature) => {
@@ -70,18 +72,32 @@ const ResultsList = ({ results }) => {
   };
 
   const handleItemClick = (index) => {
-    setSelectedItem(index);
+    if (selectedItem === index) {
+      // If the clicked item is already selected, toggle the showCurrentWeather state
+      setShowCurrentWeather((prevState) => !prevState);
+      console.log("selectetItem: ",index, ":", showCurrentWeather);
+    } else {
+      // If a different item is clicked, update the selectedItem and showCurrentWeather states
+      setSelectedItem(index);
+      setShowCurrentWeather(true);
+      console.log("selectedItem:",index, ":", showCurrentWeather);
+    }
   };
+
+  const handleClose =()=>{
+    setShowCurrentWeather(false);
+    console.log("close: ", showCurrentWeather);
+    setSelectedItem(null);
+  }
 
   return (
     <div className='Container'>
-      {isLoading ? ( // Mostrar el GIF de carga mientras isLoading es verdadero
+      {isLoading ? (
         <div className="loading-container">
           <img src={loading} alt="Loading" className="loading-image" />
           <p>Loading...</p>
         </div>
       ) : (
-        // Mostrar resultados cuando isLoading es falso
         <div className="results-list">
           <ul className='listContainer'>
             {results.map((result, index) => (
@@ -100,8 +116,8 @@ const ResultsList = ({ results }) => {
         </div>
       )}
 
-      {selectedItem !== null && (
-        <CurrentWeather data={info[selectedItem]} location={results[selectedItem]} temperature={temp[selectedItem]} />
+      {showCurrentWeather && selectedItem !== null && (
+        <CurrentWeather data={info[selectedItem]} location={results[selectedItem]} temperature={temp[selectedItem]} state={showCurrentWeather} close={handleClose} />
       )}
     </div>
   );
