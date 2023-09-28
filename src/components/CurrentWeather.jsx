@@ -23,10 +23,12 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
   const [error, setError] = useState(null);
   const [showCurrentWeather] = useState(state);
   const [showMessage, setShowMessage] = useState(false);
+  
 
   useEffect(() => {
     setLoading(true);
     getAstroInfo();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -47,7 +49,7 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
       url: 'https://wyjyt-geo-calculate.p.rapidapi.com/Sky',
       headers: {
         'content-type': 'application/json',
-        'X-RapidAPI-Key': 'a2e2a99f32mshe71d53f98ecd797p1b14cdjsnc906495e9294',
+        'X-RapidAPI-Key': '1d247f045bmsh3233b6aa3ff3903p18e1dajsn1e168b9afdb0',
         'X-RapidAPI-Host': 'wyjyt-geo-calculate.p.rapidapi.com'
       },
       data: {
@@ -72,7 +74,7 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
             timezone: 'auto'
           },
           headers: {
-            'X-RapidAPI-Key': 'eb0c8ce21amsheedb99b3cc56a0cp116bbfjsnd5a76f4f41e4',
+            'X-RapidAPI-Key': '1d247f045bmsh3233b6aa3ff3903p18e1dajsn1e168b9afdb0',
             'X-RapidAPI-Host': 'ai-weather-by-meteosource.p.rapidapi.com'
           }
         };
@@ -177,12 +179,12 @@ const copyCoordinates = () => {
         {astroInfo && (
           <div className="weather-details">
             <div className='ubicationCITY'>
-              {location.name}, {location.adm_area1}, {location.country}
+              <p>{location.name}, {location.adm_area1}, {location.country}</p>
             </div>
             <div className='principalInfo'>
               <div className='tempIMG'>
                 <div className='imageCondition'>
-                  <img src={data.current.condition.icon}/>
+                  <img alt='icon of climate' src={data.current.condition.icon}/>
                   <p className='textCondition'>{data.current.condition.text}</p>
                 </div>
                 <div className='Temperature'>
@@ -194,7 +196,7 @@ const copyCoordinates = () => {
                   Uv: {data.current.uv}
                 </div>
                 <div className='drop'>
-                  <img src={drop}/> {data.current.humidity}%
+                  <img alt='drop of water' src={drop}/> {data.current.humidity}%
                 </div>
                 <div className='cloud'>
                   Cloud: {data.current.cloud}%

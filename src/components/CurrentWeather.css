@@ -59,9 +59,10 @@
 }
 
 /* Estilos para la ubicación */
-.ubicationCITY {
+.ubicationCITY p {
   display: flex;
-  margin-left: 2%;
+ margin: 0px;
+ margin-left: 2%;
 }
 
 /* Estilos para la información principal */
@@ -77,7 +78,7 @@
   align-items: center;
   flex-direction: row;
   flex-wrap: nowrap;
-  transition: background-color 0.3s ease; /* Efecto de hover */
+  transition: all background-color 0.3s ease; /* Efecto de hover */
 }
 
 .principalInfo:hover {
@@ -101,6 +102,7 @@
 
 .textCondition {
   display: flex;
+  font-size: 15px !important;
 }
 
 .imageCondition {
@@ -169,14 +171,14 @@
 }
 
 
-/* Estilos para la última actualización */
-.lastUpdate {
-  position: absolute;
-  font-size: 10px;
-  bottom: 0%;
-  right: 60%;
-  transition: font-size 0.5s ease-in-out;
-}
+  /* Estilos para la última actualización */
+  .lastUpdate {
+    position: absolute;
+    font-size: 10px;
+    bottom: 0%;
+    right: 60%;
+    transition: font-size 0.5s ease-in-out;
+  }
 
 .lastUpdate:hover {
   font-size: 14px;
@@ -217,7 +219,7 @@
 
 .moon {
   position: relative;
-  
+  cursor: pointer;
 }
 
 
@@ -244,6 +246,7 @@
 .moon:hover .phaseName {
   display: flex;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .moon:hover .titlePhase {
@@ -258,3 +261,128 @@
   right: 0px;
   border-radius: 20px;
 }
+
+
+@media (max-width: 1286px) and (max-height: 796px) {
+
+  
+  
+  .loadimage{
+    width: 9% ;
+    height: 9% ;
+  }
+
+  .earth-image {
+    width: 63px;
+  }
+
+  .current-weather {
+    width: 63%;
+    height: 78%;
+    font-size: 10px;
+  }
+
+  .ubicationCITY p{
+    font-size: 10px;
+  }
+  .weather-details {
+    width: 63%;
+    height: 59.4%;
+  }
+
+  .principalInfo {
+    width: 31.5%;
+    height: 85%;
+  }
+
+  .Temperature{
+    font-size: 12px ;
+  }
+
+  .tempIMG{
+    width: 30%;
+  }
+
+  .complementInfo{
+    font-size: 8px;
+  }
+
+  .latitudelongitude{
+    bottom: 22%;
+  }
+  .textCondition {
+    font-size: 12px !important;
+    bottom: 35% !important;
+  }
+
+  .imageCondition img {
+    width: 60px;
+  }
+
+  .lastUpdate{
+    font-size: 8px !important;
+    bottom:0%;
+    left: 15%;
+  }
+
+  .extraInfo {
+    width: 40%;
+    height: 81%;
+  }
+
+  .moonImg img{
+    width: 75%;
+  }
+}
+
+@media (max-width: 1000px) and (max-height: 796px) {
+
+  .extraInfo {
+    display: none;
+  }
+  .principalInfo {
+    display: block;
+    position: relative;
+    left: 30%;
+  }
+
+  .Temperature{
+    font-size: 12px ;
+  }
+
+  .tempIMG{
+    width: 30%;
+    position: relative;
+    left: 35%;
+  }
+
+  .complementInfo{
+    font-size: 8px;
+    right: 20%;
+  }
+
+  .latitudelongitude{
+    bottom: 10%;
+    right: 5%;
+  }
+  .textCondition {
+    font-size: 9px !important;
+    top: 60% ;
+    left: 50% ;
+  }
+
+  .imageCondition img {
+    width: 60px;
+  }
+
+  .lastUpdate{
+    font-size: 8px !important;
+    bottom:0%;
+    left: 15%;
+    width: 100%;
+  }
+
+
+
+}
+

@@ -11,8 +11,8 @@ import CurrentWeather from './CurrentWeather';
 
 const ResultsList = ({ results }) => {
   const [temp, setTemp] = useState([]);
-  const [last_updated, setLast_updated] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+  /* const [last_updated, setLast_updated] = useState([]); */
+  const [selectedItem, setSelectedItem] = useState(null); 
   const [info, setInfo] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showCurrentWeather, setShowCurrentWeather] = useState(true); // Change initial state to false
@@ -21,6 +21,7 @@ const ResultsList = ({ results }) => {
     if (results.length > 0) {
       searchTemperature();
     }
+    // eslint-disable-next-line
   }, [results]);
 
   const searchTemperature = async () => {
@@ -35,7 +36,7 @@ const ResultsList = ({ results }) => {
             q: `${results[i].name},${results[i].adm_area1},${results[i].country}`,
           },
           headers: {
-            'X-RapidAPI-Key': '6b4a4807e5mshfd01d0925c6d1adp16c76djsnb773fc266756',
+            'X-RapidAPI-Key': '1d247f045bmsh3233b6aa3ff3903p18e1dajsn1e168b9afdb0',
             'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com'
           }
         });
@@ -49,8 +50,9 @@ const ResultsList = ({ results }) => {
     }
 
     setTemp(tempArray);
-    setLast_updated(lastupdate);
     setInfo(infoComplet);
+/*     setLast_updated(lastupdate);*/
+   
     console.log("info Complete",infoComplet);
     setIsLoading(false);
   };
