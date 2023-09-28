@@ -25,7 +25,7 @@ const SearchView = () => {
           language: 'en'
         },
         headers: {
-          'X-RapidAPI-Key': 'a2e2a99f32mshe71d53f98ecd797p1b14cdjsnc906495e9294',
+          'X-RapidAPI-Key': 'eb0c8ce21amsheedb99b3cc56a0cp116bbfjsnd5a76f4f41e4',
           'X-RapidAPI-Host': 'ai-weather-by-meteosource.p.rapidapi.com'
         }
       });
