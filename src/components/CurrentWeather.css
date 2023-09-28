@@ -200,29 +200,55 @@
   transition: all 3s ease-in-out;
 }
 
-/* Estilo adicional para los elementos dentro de extraInfo */
 .extraInfo div {
   margin: 10px 0;
   color: white;
 }
 
-.phaseName{
+.phaseName {
   display: none;
+  color: #171a1f;
   position: absolute;
   margin: 2%;
-  top: 3%;
-  right: 6%;
+  top: 20%;
+  right: 40%;
   transition: all 3s ease-in-out;
 }
 
-.moon:hover .phaseName {
-  display: flex; 
-  font-weight: bold;
-}
-.moon:hover .titlePhase{
-  display:None;
+.moon {
+  position: relative;
+  
 }
 
+
+
+
+.moon .moonImg {
+  transform-origin: center bottom; 
+  animation: floatMoon 5s ease-in-out infinite;
+}
+
+@keyframes floatMoon {
+  0% {
+    transform: translateY(0) rotate(var(--moon-rotation-angle, 0deg));
+  }
+  50% {
+    transform: translateY(-10px) rotate(var(--moon-rotation-angle, 0deg));
+  }
+  100% {
+    transform: translateY(0) rotate(var(--moon-rotation-angle, 0deg));
+  }
+}
+
+
+.moon:hover .phaseName {
+  display: flex;
+  font-weight: bold;
+}
+
+.moon:hover .titlePhase {
+  display: none;
+}
 
 .closeButton {
   cursor: pointer;

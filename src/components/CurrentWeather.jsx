@@ -19,21 +19,21 @@ import { CloseButton } from 'react-bootstrap';
 const CurrentWeather = ({ data, location, temperature, state, close }) => {
   const [loading, setLoading] = useState(false);
   const [astroInfo, setAstroInfo] = useState(null);
+  const [sunInfo, setSunInfo] = useState(null); 
   const [error, setError] = useState(null);
   const [showCurrentWeather] = useState(state);
   const [showMessage, setShowMessage] = useState(false);
-
-
-
-  
-  
-  
-  
 
   useEffect(() => {
     setLoading(true);
     getAstroInfo();
   }, []);
+
+  useEffect(() => {
+    if (sunInfo) {
+      console.log("Sun Info: ", sunInfo);
+    }
+  }, [sunInfo]);
 
   /* get astro info from Meteosource */
   const getAstroInfo = async () => {
@@ -41,7 +41,8 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
     let astroLon = data.location.lon;
     let localtime = data.location.localtime;
     console.log("getastroinfo: ", astroLat, astroLon, localtime);
-    const options = {
+  
+    const astroOptions = {
       method: 'POST',
       url: 'https://wyjyt-geo-calculate.p.rapidapi.com/Sky',
       headers: {
@@ -54,15 +55,36 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
         coordinate: `${astroLat} ${astroLon}`
       }
     };
+  
     try {
-      const response = await axios.request(options);
-      if (response.data) {
-        setAstroInfo(response.data);
-        console.log("ASTROINFO: ", response.data);
-      }
+      const astroResponse = await axios.request(astroOptions);
+        setLoading(true);
+        setAstroInfo(astroResponse.data);
+        console.log("ASTROINFO: ", astroResponse.data);
+        
+        // Makes second Peition to get Sun Info
+        const sunOptions = {
+          method: 'GET',
+          url: 'https://ai-weather-by-meteosource.p.rapidapi.com/astro',
+          params: {
+            lat: astroLat, 
+            lon: astroLon, 
+            timezone: 'auto'
+          },
+          headers: {
+            'X-RapidAPI-Key': 'a2e2a99f32mshe71d53f98ecd797p1b14cdjsnc906495e9294',
+            'X-RapidAPI-Host': 'ai-weather-by-meteosource.p.rapidapi.com'
+          }
+        };
+  
+        const sunResponse = await axios.request(sunOptions);
+        if (sunResponse.data) {
+          setSunInfo(sunResponse.data.astro.data[0]);
+          console.log("Sun Info: ", sunInfo);
+        }
+      
     } catch (error) {
       setError('Error al obtener información astronómica\nIntente nuevamente más tarde');
-      /* wait 2 segunds and calls close */
       setTimeout(() => {
         close();
       }, 2000);
@@ -70,6 +92,7 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
       setLoading(false);
     }
   }
+  
 
   const getMoonPhaseIcon = (phaseName) => {
     switch (phaseName) {
@@ -110,10 +133,7 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
     }
   }
 
-  /* copy latitude and longitude on clipboard in the format: "lat , lon"*/
-  // ...
-
-/* copy latitude and longitude on clipboard in the format: "lat , lon"*/
+  
 const copyCoordinates = () => {
   let lat = data.location.lat;
   let lon = data.location.lon;
@@ -141,13 +161,6 @@ const copyCoordinates = () => {
 </div>
 
 
-const subtractHoursAndMinutes = (time, hours, minutes) => {
-  const [hh, mm, ss] = time.split(':').map(Number);
-  const totalMinutes = hh * 60 + mm - (hours * 60 + minutes);
-  const newHH = Math.floor(totalMinutes / 60);
-  const newMM = totalMinutes % 60;
-  return `${newHH.toString().padStart(2, '0')}:${newMM.toString().padStart(2, '0')}:${ss}`;
-};
 
   return (
     showCurrentWeather ? (
@@ -221,16 +234,20 @@ const subtractHoursAndMinutes = (time, hours, minutes) => {
 
             <div className='extraInfo'>
               <div className='moon'>
-                <strong className='titlePhase'>Moon Phase:</strong> {getMoonPhaseIcon(astroInfo.moon.illumination.phaseName)}
-                <p className='phaseName'>{astroInfo.moon.illumination.phaseName}</p>
+                <strong className='titlePhase'>Moon Phase:</strong> 
+                <div className="moonImg" style={{ '--moon-rotation-angle': `${astroInfo?.moon?.declination}deg` }}>
+                  {getMoonPhaseIcon(astroInfo.moon.illumination.phaseName)}
+                </div>
+                <p className='phaseName'>{astroInfo?.moon?.illumination?.phaseName}</p>
               </div>
               <div>
-                <strong>Sunrise:</strong> {subtractHoursAndMinutes(astroInfo.sun.rise.split('T')[1], 5, 29)}
+                <strong>Sunrise:</strong> {sunInfo?.sun?.rise.split('T')[0]}
               </div>
               <div>
-                <strong>Sunset:</strong> {subtractHoursAndMinutes(astroInfo.sun.set.split('T')[1], 5, 21)}
+                <strong>Sunset:</strong> {sunInfo?.sun?.set.split('T')[0]}
               </div>
             </div>
+
 
           </div>
         )}
