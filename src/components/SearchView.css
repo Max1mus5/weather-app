@@ -35,6 +35,7 @@ body {
     padding: none;
     color: #b6b6b6;
     width: 45vh;
+    max-width: 740px;
     height: 100vh;
 }
 
@@ -94,4 +95,5 @@ body {
 .search-view.blur {
   filter: blur(4px);
 }
+
 
