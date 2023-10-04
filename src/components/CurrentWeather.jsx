@@ -23,7 +23,31 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
   const [error, setError] = useState(null);
   const [showCurrentWeather] = useState(state);
   const [showMessage, setShowMessage] = useState(false);
-  
+  const [showPrincipalInfo, setShowPrincipalInfo] = useState(true);
+  const [showExtraInfo, setShowExtraInfo] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 1000px)');
+    if (mediaQuery.matches) {
+      setShowPrincipalInfo(true);
+      setShowExtraInfo(false);
+    }
+    else{
+      setShowPrincipalInfo(true);
+      setShowExtraInfo(true);
+    }
+  }, []);
+
+  const handleClickPrincipalInfo = () => {
+    setShowPrincipalInfo(false);
+    setShowExtraInfo(true);
+  };
+
+  const handleClickExtraInfo = () => {
+    setShowPrincipalInfo(true);
+    setShowExtraInfo(false);
+  };
+
 
   useEffect(() => {
     setLoading(true);
@@ -181,74 +205,79 @@ const copyCoordinates = () => {
             <div className='ubicationCITY'>
               <p>{location.name}, {location.adm_area1}, {location.country}</p>
             </div>
-            <div className='principalInfo'>
-              <div className='tempIMG'>
-                <div className='imageCondition'>
-                  <img alt='icon of climate' src={data.current.condition.icon}/>
-                  <p className='textCondition'>{data.current.condition.text}</p>
+            {showPrincipalInfo && <div onClick={handleClickPrincipalInfo}>
+              <div className='principalInfo'>
+                <div className='tempIMG'>
+                  <div className='imageCondition'>
+                    <img alt='icon of climate' src={data.current.condition.icon}/>
+                    <p className='textCondition'>{data.current.condition.text}</p>
+                  </div>
+                  <div className='Temperature'>
+                    {temperature}°C
+                  </div>
                 </div>
-                <div className='Temperature'>
-                  {temperature}°C
+                <div className='complementInfo'>
+                  <div className='uv'>
+                    Uv: {data.current.uv}
+                  </div>
+                  <div className='drop'>
+                    <img alt='drop of water' src={drop}/> {data.current.humidity}%
+                  </div>
+                  <div className='cloud'>
+                    Cloud: {data.current.cloud}%
+                  </div>
+                  <div className='feelsLike'>
+                    Feels Like: {data.current.feelslike_c}°C
+                  </div>
+                  <div className='gust'>
+                    Gust: {data.current.gust_kph} kph
+                  </div>
+                  <div className='pressure'>
+                    Pressure: {data.current.pressure_in} in
+                  </div>
+                  <div className='wind'>
+                    Wind: {data.current.wind_kph} kph {data.current.wind_dir}
+                  </div>
+                  <div className='visibility'>
+                    Visibility: {data.current.vis_km} km
+                  </div>
+                  <div className='precipitation'>
+                    Precipitation: {data.current.precip_mm} mm
+                  </div>
+                </div> 
+                <div className='latitudelongitude' onClick={copyCoordinates}>
+                  <div>
+                    <strong>Latitude:</strong> {data.location.lat}
+                  </div>
+                  <div>
+                    <strong>Longitude:</strong> {data.location.lon}
+                  </div>
+                  {showMessage && <p className="copy-message">Copied!</p>}
+                </div>
+                <div className='lastUpdate'> 
+                  <strong>Last Update: {data.current.last_updated}</strong>
                 </div>
               </div>
-              <div className='complementInfo'>
-                <div className='uv'>
-                  Uv: {data.current.uv}
-                </div>
-                <div className='drop'>
-                  <img alt='drop of water' src={drop}/> {data.current.humidity}%
-                </div>
-                <div className='cloud'>
-                  Cloud: {data.current.cloud}%
-                </div>
-                <div className='feelsLike'>
-                  Feels Like: {data.current.feelslike_c}°C
-                </div>
-                <div className='gust'>
-                  Gust: {data.current.gust_kph} kph
-                </div>
-                <div className='pressure'>
-                  Pressure: {data.current.pressure_in} in
-                </div>
-                <div className='wind'>
-                  Wind: {data.current.wind_kph} kph {data.current.wind_dir}
-                </div>
-                <div className='visibility'>
-                  Visibility: {data.current.vis_km} km
-                </div>
-                <div className='precipitation'>
-                  Precipitation: {data.current.precip_mm} mm
-                </div>
-              </div> 
-              <div className='latitudelongitude' onClick={copyCoordinates}>
-                <div>
-                  <strong>Latitude:</strong> {data.location.lat}
-                </div>
-                <div>
-                  <strong>Longitude:</strong> {data.location.lon}
-                </div>
-                {showMessage && <p className="copy-message">Copied!</p>}
-              </div>
-              <div className='lastUpdate'> 
-                <strong>Last Update: {data.current.last_updated}</strong>
-              </div>
-            </div>
+            </div>}
 
-            <div className='extraInfo'>
-              <div className='moon'>
-                <strong className='titlePhase'>Moon Phase:</strong> 
-                <div className="moonImg" style={{ '--moon-rotation-angle': `${astroInfo?.moon?.declination}deg` }}>
-                  {getMoonPhaseIcon(astroInfo.moon.illumination.phaseName)}
+           
+            {showExtraInfo && <div onClick={handleClickExtraInfo}>
+              <div className='extraInfo'>
+                <div className='moon'>
+                  <strong className='titlePhase'>Moon Phase:</strong> 
+                  <div className="moonImg" style={{ '--moon-rotation-angle': `${astroInfo?.moon?.declination}deg` }}>
+                    {getMoonPhaseIcon(astroInfo.moon.illumination.phaseName)}
+                  </div>
+                  <p className='phaseName'>{astroInfo?.moon?.illumination?.phaseName}</p>
                 </div>
-                <p className='phaseName'>{astroInfo?.moon?.illumination?.phaseName}</p>
+                <div>
+                  <strong>Sunrise:</strong> {sunInfo?.sun?.rise.split('T')[0]}
+                </div>
+                <div>
+                  <strong>Sunset:</strong> {sunInfo?.sun?.set.split('T')[0]}
+                </div>
               </div>
-              <div>
-                <strong>Sunrise:</strong> {sunInfo?.sun?.rise.split('T')[0]}
-              </div>
-              <div>
-                <strong>Sunset:</strong> {sunInfo?.sun?.set.split('T')[0]}
-              </div>
-            </div>
+            </div>}
 
 
           </div>
