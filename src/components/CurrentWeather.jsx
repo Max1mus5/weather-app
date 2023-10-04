@@ -25,6 +25,7 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
   const [showMessage, setShowMessage] = useState(false);
   const [showPrincipalInfo, setShowPrincipalInfo] = useState(true);
   const [showExtraInfo, setShowExtraInfo] = useState(false);
+  const [openGoogleMaps, setOpenGoogleMaps] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 1000px)');
@@ -47,6 +48,18 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
     setShowPrincipalInfo(true);
     setShowExtraInfo(false);
   };
+
+  const openGoogleMapsWindow = (lat, lon) => {
+    const url = `https://www.google.com/maps?q=${lat},${lon}`;
+    window.open(url, '_blank');
+  };
+  
+
+  const handleOpenGoogleMaps = () => {
+    setOpenGoogleMaps(true);
+    openGoogleMapsWindow(data.location.lat, data.location.lon);
+  };
+  
 
 
   useEffect(() => {
@@ -192,7 +205,8 @@ const copyCoordinates = () => {
     showCurrentWeather ? (
       <div className="current-weather">
         <div>
-          <img src={earthImage} alt="earth" className='earth-image move' />
+        <img src={earthImage} alt="earth" className='earth-image move' onClick={handleOpenGoogleMaps} />
+
         </div>
         {loading && (
           <div>
@@ -282,6 +296,7 @@ const copyCoordinates = () => {
 
           </div>
         )}
+        {openGoogleMaps && openGoogleMapsWindow(data.location.lat, data.location.lon)}
         <CloseButton className='closeButton' onClick={() => {
           close();
           console.log("closed : ", showCurrentWeather);
