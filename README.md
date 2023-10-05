@@ -1,20 +1,19 @@
-# Weather App
+# CLIM-J
 
-![Weather App Logo\n]
+![Weather App Logo](https://github.com/Max1mus5/weather-app/assets/75461653/f8e48cc4-33e0-4fd9-a8b7-60b54b2683af)
 
-<img src="https://github.com/Max1mus5/weather-app/assets/75461653/f8e48cc4-33e0-4fd9-a8b7-60b54b2683af" alt="Weather App Logo" width="800"/> 
 Una aplicación simple para consultar el pronóstico del tiempo.
 
 ## Características
 
 - Consulta el pronóstico del tiempo actual.
-- Visualiza informacion de la luna y el sol
-- Informacion complementaria actual.
+- Visualiza información de la luna y el sol.
+- Información complementaria actual.
 
 ## Capturas de Pantalla
 
-<img src="https://github.com/Max1mus5/weather-app/assets/75461653/9604322c-6d14-4aa4-b9a4-48d635c3dc70" alt="Screenshot 1" width="200"/> <img src="https://github.com/Max1mus5/weather-app/assets/75461653/8c694bcf-3a0b-4b60-a337-e17e9fe20ebd" alt="Screenshot 2" width="200"/> 
-
+![Screenshot 1](https://github.com/Max1mus5/weather-app/assets/75461653/9604322c-6d14-4aa4-b9a4-48d635c3dc70)
+![Screenshot 2](https://github.com/Max1mus5/weather-app/assets/75461653/8c694bcf-3a0b-4b60-a337-e17e9fe20ebd)
 
 ## Instalación
 
@@ -39,4 +38,3 @@ Si deseas contribuir a este proyecto, sigue estos pasos:
 ## Licencia
 
 Este proyecto está bajo la licencia MIT. Para obtener más detalles, consulta el archivo [LICENSE](LICENSE).
-
