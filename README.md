@@ -1,6 +1,6 @@
 # CLIM-J
 
-![Weather App Logo](https://github.com/Max1mus5/weather-app/assets/75461653/f8e48cc4-33e0-4fd9-a8b7-60b54b2683af)
+![Weather App Logo](https://github.com/Max1mus5/weather-app/assets/75461653/6cbdb56f-3d2a-487e-9ecf-6437b930087b)
 
 Una aplicación simple para consultar el pronóstico del tiempo.
 
