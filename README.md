@@ -11,9 +11,8 @@ Una aplicación simple para consultar el pronóstico del tiempo.
 - Información complementaria actual.
 
 ## Capturas de Pantalla
+<img src="https://github.com/Max1mus5/weather-app/assets/75461653/9604322c-6d14-4aa4-b9a4-48d635c3dc70" alt="Screenshot 1" width="300"/> <img src="https://github.com/Max1mus5/weather-app/assets/75461653/8c694bcf-3a0b-4b60-a337-e17e9fe20ebd" alt="Screenshot 2" width="300"/>
 
-![Screenshot 1](https://github.com/Max1mus5/weather-app/assets/75461653/9604322c-6d14-4aa4-b9a4-48d635c3dc70)
-![Screenshot 2](https://github.com/Max1mus5/weather-app/assets/75461653/8c694bcf-3a0b-4b60-a337-e17e9fe20ebd)
 
 ## Instalación
 
