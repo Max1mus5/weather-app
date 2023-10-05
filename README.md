@@ -1,6 +1,7 @@
 # Weather App
 
-![Weather App Logo](![DreamShaper_v7_create_a_minimalist_logo_with_black_blue_and_wh_3](https://github.com/Max1mus5/weather-app/assets/75461653/f8e48cc4-33e0-4fd9-a8b7-60b54b2683af))
+![Weather App Logo]
+![DreamShaper_v7_create_a_minimalist_logo_with_black_blue_and_wh_3](https://github.com/Max1mus5/weather-app/assets/75461653/f8e48cc4-33e0-4fd9-a8b7-60b54b2683af)
 
 Una aplicación simple para consultar el pronóstico del tiempo.
 
