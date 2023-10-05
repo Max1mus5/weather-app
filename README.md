@@ -2,7 +2,7 @@
 
 ![Weather App Logo\n]
 
-<img src="https://github.com/Max1mus5/weather-app/assets/75461653/f8e48cc4-33e0-4fd9-a8b7-60b54b2683af" alt="Weather App Logo" width="1000"/> 
+<img src="https://github.com/Max1mus5/weather-app/assets/75461653/f8e48cc4-33e0-4fd9-a8b7-60b54b2683af" alt="Weather App Logo" width="800"/> 
 Una aplicación simple para consultar el pronóstico del tiempo.
 
 ## Características
