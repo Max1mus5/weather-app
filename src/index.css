@@ -1,10 +1,30 @@
+@font-face {
+  font-family: 'onset';
+  src: url('../public/TTF/OnestThin1602-hint.ttf') format('truetype');
+}
+
+:root{
+  --mirage: #1c1d31;
+  --brigthGray: #3a3d4b;
+  --shuttleGray: #5f6677;
+  --littleBlue: #5777b9;
+  --Manatee:#8e97a9;
+  --Heather:#b6c2d3;
+
+  --wildSand: #f7f7f7;
+  --Alto:#e0e0e0;
+  --Gray: #8f8f8f;
+  --Scorpion:#575757;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'onset', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--mirage);
 }
 
 code {
@@ -13,9 +33,35 @@ code {
 }
 
 footer a {
-  display:inline;
-  color: #ffffff;
+  color: var(--wildSand);
   text-decoration: none;
   align-items:end;
-  background-color: rgb(10, 24, 46,0.7);
+  background-color: var(--mirage);
 }
+
+footer{
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 0;
+}
+
+/* footer underline animation, born in center of div to both side end */
+footer a::after {
+  content: '';
+  display: block;
+  margin: auto;
+  height: 2px;
+  width: 0;
+  background: transparent;
+  transition: width .5s ease, background-color .5s ease;
+}
+
+footer a:hover::after {
+  width: 100%;
+  background: var(--wildSand);
+}
+
+

@@ -97,7 +97,6 @@ const ResultsList = ({ results }) => {
       {isLoading ? (
         <div className="loading-container">
           <img src={loading} alt="Loading" className="loading-image" />
-          <p>Loading...</p>
         </div>
       ) : (
         <div className="results-list">

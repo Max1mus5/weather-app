@@ -1,88 +1,116 @@
 .loading-image{
-  margin-top: 90px;
-  width: 40%;
-  height: 40%;
-  transition: width 0.6s ease, height 0.6s ease;
+ transform: scale(0.3);
+  transition: transform 0.6s ease;
 }
 .loading-image:hover{
-  width: 60%;
-  height: 60%;
+  transform: scale(0.4);
 }
-.listElement {
-  height: 50px;
-  width: 100%;
-  text-decoration: none;
+
+.Container{
+  margin-top:50px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 10px;
-  color: rgb(255, 255, 255);
-  background: linear-gradient(180deg, rgb(43, 61, 90,0.5) 1.56%, rgb(86, 108, 123,0.5) 83.33%);
-  font-weight: bold;
-  border-radius: 10px;
-  transition: font-size 0.6s ease, height 0.2s ease-in-out; /* Include height in the transition */
+  justify-content: center;
 }
 
-
-.location{
+.results-list{
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  margin-left: 2px;
-  gap:0px;
-  margin-bottom: 10px;
-  color: rgb(255, 255, 255);
+  align-items: center;
+  width: 100%;
+  padding: 0px;
+  overflow: hidden;
 }
+.listContainer {
+  display: grid;
+  grid-template-columns: 1fr; /* Creates a single column layout */
+  grid-auto-rows: auto; /* Automatically sizes rows based on content */
+  align-items: center;
+  width: 100%;
+  height: 80%;
+  padding: 0px;
+  overflow: hidden;
+  margin: 0px;
+  gap: 10px; /* Adjusts the gap between grid items */
+ }
 
-.country {
-  font-size: 1rem;
-  font-weight: bold;
-  transition: font-size 0.6s ease;
-}
-
-.city {
-  color: #FFF;
-  font-size: 0.8rem;
-  font-weight: normal;
-  margin-top: 0;
-  transition: font-size 0.6s ease;
-}
-
-.temperatureContainer {
-  display: flex;
-  align-items: end;
-  gap: 5px;
-}
-
-.temperatureImage {
-  width: 16px !important; /* adjust size as needed */
-  height: 16px !important;
-}
-.temperatureValue {
-  font-weight: bold;
-}
-
-.lastUpdated {
-  font-weight: bold;
+.listElement {
+height: 50px;
+width: 100%;
+text-decoration: none;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 20px;
+color: var(--wildSand); /* Updated color */
+background: linear-gradient(180deg, var(--Scorpion) 1.56%, var(--Gray) 83.33%); /* Updated gradient */
+font-weight: bold;
+border-radius: 10px;
+transition: all 0.6s ease; 
 }
 
 .listElement:hover {
-  height: 80px;
-  width: 105%;
-  background-color: rgb(196, 212, 227,0.5);
-  font-size: 1.2rem;
-  color: black;
-  cursor: pointer;
-  box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.5);
-}
-.country:hover{
-  font-size: 1.3rem;
-}
-.city:hover{
-  font-size:1rem;
+transform: scale(1.1);
+background-color: var(--Heather); /* Updated hover background */
+font-size: 1.2rem;
+color: var(--Scorpion); /* Updated hover text color */
+cursor: pointer;
+box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.5);
 }
 
+.location {
+display: flex;
+flex-direction: column;
+align-items: stretch;
+margin-left: 2px;
+gap: 0px;
+margin-bottom: 10px;
+color: var(--wildSand); /* Updated color */
+}
+
+.country {
+font-size: 1rem;
+font-weight: bold;
+transition: font-size 0.6s ease;
+}
+
+.country:hover {
+font-size: 1.3rem;
+color: var(--Manatee); /* Updated hover color */
+}
+
+.city {
+color: var(--wildSand); /* Updated color */
+font-size: 0.8rem;
+font-weight: normal;
+margin-top: 0;
+transition: font-size 0.6s ease;
+}
+
+.city:hover {
+font-size: 1rem;
+color: var(--Manatee); /* Updated hover color */
+}
+
+.temperatureContainer {
+display: flex;
+align-items: end;
+gap: 5px;
+}
+
+.temperatureImage {
+width: 16px !important;
+height: 16px !important;
+}
+
+.temperatureValue {
+font-weight: bold;
+}
+
+.lastUpdated {
+font-weight: bold;
+}
+ 
 @media (max-width: 1000px){
 /* reduce size 20% */
   .listElement {
@@ -92,8 +120,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
-    margin-bottom: 10px;
     color: rgb(255, 255, 255);
     background: linear-gradient(180deg, rgb(43, 61, 90,0.5) 1.56%, rgb(86, 108, 123,0.5) 83.33%);
     font-weight: bold;
