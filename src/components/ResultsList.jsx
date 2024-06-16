@@ -36,7 +36,7 @@ const ResultsList = ({ results }) => {
             q: `${results[i].name},${results[i].adm_area1},${results[i].country}`,
           },
           headers: {
-            'X-RapidAPI-Key': '1d247f045bmsh3233b6aa3ff3903p18e1dajsn1e168b9afdb0',
+            'X-RapidAPI-Key': 'eb0c8ce21amsheedb99b3cc56a0cp116bbfjsnd5a76f4f41e4',//leon
             'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com'
           }
         });

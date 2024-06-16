@@ -1,0 +1,10 @@
+{
+  "configurations": [
+    {
+      "type": "chrome",
+      "name": "http://AxiosError",
+      "request": "launch",
+      "url": "http://AxiosError"
+    }
+  ]
+}

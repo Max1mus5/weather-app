@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CurrentWeather.css';
 import axios from 'axios';
+import SolarH from './SolarH.jsx';
 import loadingIcon from '../img/loadicon.svg';
 import earthImage from '../img/earth.png';
 import newmoon from '../img/Final View/MoonPhases/new-moon.png';
@@ -17,37 +18,37 @@ import drop from '../img/Final View/PrincipalWeather/water.png';
 import { CloseButton } from 'react-bootstrap';
 
 const CurrentWeather = ({ data, location, temperature, state, close }) => {
+
+  const [dataLocation, setDataLocation]= useState(data);
+  const [astroInfoFix, setAstroInfoFix] = useState(null);
   const [loading, setLoading] = useState(false);
   const [astroInfo, setAstroInfo] = useState(null);
   const [sunInfo, setSunInfo] = useState(null); 
   const [error, setError] = useState(null);
   const [showCurrentWeather] = useState(state);
   const [showMessage, setShowMessage] = useState(false);
-  const [showPrincipalInfo, setShowPrincipalInfo] = useState(true);
-  const [showExtraInfo, setShowExtraInfo] = useState(false);
   const [openGoogleMaps, setOpenGoogleMaps] = useState(false);
+ 
 
+  // Función para restablecer todos los estados a sus valores iniciales
+  const resetStates = () => {
+    setDataLocation(data);
+    setAstroInfoFix(null);
+    setLoading(false);
+    setAstroInfo(null);
+    setSunInfo(null);
+    setError(null);
+    setShowMessage(false);
+    setOpenGoogleMaps(false);
+  };
+
+  // Uso de useEffect para restablecer estados cuando el componente se desmonte
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 1000px)');
-    if (mediaQuery.matches) {
-      setShowPrincipalInfo(true);
-      setShowExtraInfo(false);
-    }
-    else{
-      setShowPrincipalInfo(true);
-      setShowExtraInfo(true);
-    }
-  }, []);
+    return () => {
+      resetStates();
+    };
+  }, []); // Dependencias vacías indican que este efecto se ejecuta solo una vez
 
-  const handleClickPrincipalInfo = () => {
-    setShowPrincipalInfo(false);
-    setShowExtraInfo(true);
-  };
-
-  const handleClickExtraInfo = () => {
-    setShowPrincipalInfo(true);
-    setShowExtraInfo(false);
-  };
 
   const openGoogleMapsWindow = (lat, lon) => {
     const url = `https://www.google.com/maps?q=${lat},${lon}`;
@@ -68,9 +69,17 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
     // eslint-disable-next-line
   }, []);
 
+  // Fix astroInfo to avoid null values
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAstroInfoFix(astroInfo);
+    }, 100);
+    return () => clearTimeout(timer);
+
+  }, [astroInfo]);
+
   useEffect(() => {
     if (sunInfo) {
-      console.log("Sun Info: ", sunInfo);
     }
   }, [sunInfo]);
 
@@ -79,14 +88,14 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
     let astroLat = data.location.lat;
     let astroLon = data.location.lon;
     let localtime = data.location.localtime;
-    console.log("getastroinfo: ", astroLat, astroLon, localtime);
+    //console.log("getastroinfo: ", astroLat, astroLon, localtime);
   
     const astroOptions = {
       method: 'POST',
       url: 'https://wyjyt-geo-calculate.p.rapidapi.com/Sky',
       headers: {
         'content-type': 'application/json',
-        'X-RapidAPI-Key': '1d247f045bmsh3233b6aa3ff3903p18e1dajsn1e168b9afdb0',
+        'X-RapidAPI-Key': 'eb0c8ce21amsheedb99b3cc56a0cp116bbfjsnd5a76f4f41e4',//leon
         'X-RapidAPI-Host': 'wyjyt-geo-calculate.p.rapidapi.com'
       },
       data: {
@@ -99,7 +108,8 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
       const astroResponse = await axios.request(astroOptions);
         setLoading(true);
         setAstroInfo(astroResponse.data);
-        console.log("ASTROINFO: ", astroResponse.data);
+        
+        //console.log("ASTROINFO: ", astroResponse.data);
         
         // Makes second Peition to get Sun Info
         const sunOptions = {
@@ -111,7 +121,7 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
             timezone: 'auto'
           },
           headers: {
-            'X-RapidAPI-Key': '1d247f045bmsh3233b6aa3ff3903p18e1dajsn1e168b9afdb0',
+            'X-RapidAPI-Key': 'eb0c8ce21amsheedb99b3cc56a0cp116bbfjsnd5a76f4f41e4',//leon
             'X-RapidAPI-Host': 'ai-weather-by-meteosource.p.rapidapi.com'
           }
         };
@@ -119,11 +129,12 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
         const sunResponse = await axios.request(sunOptions);
         if (sunResponse.data) {
           setSunInfo(sunResponse.data.astro.data[0]);
-          console.log("Sun Info: ", sunInfo);
+         /*  console.log("Sun Info: ", sunInfo); */
+
         }
       
     } catch (error) {
-      setError('Error al obtener información astronómica\nIntente nuevamente más tarde');
+      setError('Error getting astronomical Info, Try Again Later');
       setTimeout(() => {
         close();
       }, 2000);
@@ -189,25 +200,26 @@ const copyCoordinates = () => {
     });
 }
 
-<div className='latitudelongitude' onClick={copyCoordinates}>
-  <div>
-    <strong>Latitude:</strong> {data.location.lat}
-  </div>
-  <div>
-    <strong>Longitude:</strong> {data.location.lon}
-  </div>
-  {showMessage && <p className="copy-message">Click to copy</p>}
-</div>
+  
+
 
 
 
   return (
     showCurrentWeather ? (
       <div className="current-weather">
-        <div>
+       <div className="headerCurrentWeather">
+       <div>
         <img src={earthImage} alt="earth" className='earth-image move' onClick={handleOpenGoogleMaps} />
 
         </div>
+        <CloseButton className='closeButton' onClick={() => {
+          close();
+/*           console.log("closed : ", showCurrentWeather);
+ */        }}>
+          <svg width="80px" height="80px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="#f7f7f7" stroke-width="1.5" stroke-linecap="round"></path> <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="#f7f7f7" stroke-width="1.5" stroke-linecap="round"></path> </g></svg>
+        </CloseButton>
+       </div>
         {loading && (
           <div>
             <img src={loadingIcon} alt="Loading" className='loading-image loadimage'/>
@@ -216,66 +228,71 @@ const copyCoordinates = () => {
         {error && <p>{error}</p>}
         {astroInfo && (
           <div className="weather-details">
-            <div className='ubicationCITY'>
-              <p>{location.name}, {location.adm_area1}, {location.country}</p>
-            </div>
-            {showPrincipalInfo && <div onClick={handleClickPrincipalInfo}>
               <div className='principalInfo'>
+              <div className='ubicationCITY'>
+              <p>{location.name}, {location.adm_area1}, {location.country}</p>
+              </div>
                 <div className='tempIMG'>
                   <div className='imageCondition'>
-                    <img alt='icon of climate' src={data.current.condition.icon}/>
+                    <img className='imageConditionIMG' alt='icon of climate' src={data.current.condition.icon}/>
                     <p className='textCondition'>{data.current.condition.text}</p>
-                  </div>
+                  </div>  
                   <div className='Temperature'>
                     {temperature}°C
                   </div>
                 </div>
                 <div className='complementInfo'>
-                  <div className='uv'>
-                    Uv: {data.current.uv}
+                  <div className='complementElement'>
+                    <h3>Uv</h3>
+                    {data.current.uv}
                   </div>
                   <div className='drop'>
                     <img alt='drop of water' src={drop}/> {data.current.humidity}%
                   </div>
-                  <div className='cloud'>
-                    Cloud: {data.current.cloud}%
+                  <div className='complementElement'>
+                    <h3>Cloud</h3>
+                    {data.current.cloud}%
                   </div>
-                  <div className='feelsLike'>
-                    Feels Like: {data.current.feelslike_c}°C
+                  <div className='complementElement'>
+                    <h3>Feels Like</h3>
+                    {data.current.feelslike_c}°C
                   </div>
-                  <div className='gust'>
-                    Gust: {data.current.gust_kph} kph
+                  <div className='complementElement'>
+                    <h3>Gust</h3>
+                    {data.current.gust_kph} kph
                   </div>
-                  <div className='pressure'>
-                    Pressure: {data.current.pressure_in} in
+                  <div className='complementElement'>
+                    <h3>Pressure</h3>
+                    {data.current.pressure_in} in
                   </div>
-                  <div className='wind'>
-                    Wind: {data.current.wind_kph} kph {data.current.wind_dir}
+                  <div className='complementElement'>
+                    <h3>Wind</h3>
+                    {data.current.wind_kph} kph {data.current.wind_dir}
                   </div>
-                  <div className='visibility'>
-                    Visibility: {data.current.vis_km} km
+                  <div className='complementElement'>
+                    <h3>Visibility</h3>
+                    {data.current.vis_km} km
                   </div>
-                  <div className='precipitation'>
-                    Precipitation: {data.current.precip_mm} mm
+                  <div className='complementElement'>
+                    <h3>Precipitation</h3>
+                    {data.current.precip_mm} mm
                   </div>
-                </div> 
-                <div className='latitudelongitude' onClick={copyCoordinates}>
-                  <div>
-                    <strong>Latitude:</strong> {data.location.lat}
-                  </div>
-                  <div>
-                    <strong>Longitude:</strong> {data.location.lon}
+                </div>
+                <div className='coordinatesDiv'>
+                  <div className='latitudelongitude' onClick={copyCoordinates}>
+                    <div>
+                      <strong>Latitude:</strong> {data.location.lat}
+                    </div>
+                    <div>
+                      <strong>Longitude:</strong> {data.location.lon}
+                    </div>
                   </div>
                   {showMessage && <p className="copy-message">Copied!</p>}
                 </div>
                 <div className='lastUpdate'> 
-                  <strong>Last Update: {data.current.last_updated}</strong>
+                  <strong>Last Update:</strong> <i>{data.current.last_updated}</i>
                 </div>
               </div>
-            </div>}
-
-           
-            {showExtraInfo && <div onClick={handleClickExtraInfo}>
               <div className='extraInfo'>
                 <div className='moon'>
                   <strong className='titlePhase'>Moon Phase:</strong> 
@@ -284,25 +301,17 @@ const copyCoordinates = () => {
                   </div>
                   <p className='phaseName'>{astroInfo?.moon?.illumination?.phaseName}</p>
                 </div>
+                 <SolarH dataLocation={dataLocation} astroInfo={astroInfoFix} className="SolarH" />
                 <div>
-                  <strong>Sunrise:</strong> {sunInfo?.sun?.rise.split('T')[0]}
+                  <strong>Sunrise:</strong> {sunInfo?.sun?.rise.split('T')[1]}
                 </div>
                 <div>
-                  <strong>Sunset:</strong> {sunInfo?.sun?.set.split('T')[0]}
+                  <strong>Sunset:</strong> {sunInfo?.sun?.set.split('T')[1]}
                 </div>
               </div>
-            </div>}
-
-
           </div>
         )}
         {openGoogleMaps && openGoogleMapsWindow(data.location.lat, data.location.lon)}
-        <CloseButton className='closeButton' onClick={() => {
-          close();
-          console.log("closed : ", showCurrentWeather);
-        }}>
-          <span className="material-symbols-outlined">close</span>
-        </CloseButton>
 
       </div>
     ) : null

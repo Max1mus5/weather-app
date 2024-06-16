@@ -1,9 +1,7 @@
-
-  .loadimage{
-    width: 10% !important;
-    height: 10% !important;
-    position: absolute;
-    top: 30%;
+.loadimage{
+    transform: scale(0.3);
+    position: fixed;
+    top: 27%;
     left: 45%;
     }
   @keyframes rotate {
@@ -17,9 +15,6 @@
   }
 
   .earth-image {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 70px;
     animation: rotate 10s linear infinite, move 10s linear infinite;
     transition: top 5s ease-in-out, left 5s ease-in-out;
@@ -32,283 +27,177 @@
 
  /* Estilos para el contenedor principal */
 .current-weather {
-  position: absolute;
-  top: 10%;
-  left: 15%;
-  width: 70%;
-  height: 675px;
-  background: #01071FFF;
-  border-radius: 6px;
-  box-shadow: 0px 0px 1px #171a1f, 0px 0px 2px #171a1f;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 9999;
-  border-radius: 25px;
-  backdrop-filter: blur(10px);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+width: 100%;
+height: 80%;
+position: fixed;
+bottom: 35px;
+right: 0;
+background-color: rgba(8, 2, 49, 0.652);
+backdrop-filter: blur(10px);
+z-index:999;
+margin-top:80px;
+color: var(--wildSand);
 }
 
-/* Estilos para la información del clima */
-.weather-details {
-  position: absolute;
-  top: 96px;
-  left: 15%;
-  width: 70%;
-  height: 66%;
-  background-color: rgba(0, 0, 0, 0.7);
-  border-radius: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* Estilos para la ubicación */
-.ubicationCITY p {
-  display: flex;
- margin: 0px;
- margin-left: 2%;
-}
-
-/* Estilos para la información principal */
-.principalInfo {
-  display: flex;
-  width: 35%;
-  height:380px;
-  margin-top: 0px;
-  padding: 20px;
-  border-radius: 10px;
-  background: linear-gradient(to bottom, #2980b9, #2c3e50);
-  color: white;
-  align-items: center;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  transition: all background-color 0.3s ease; /* Efecto de hover */
-}
-
-.principalInfo:hover {
-  background-color: #34495e; /* Cambio de color al hacer hover */
-}
-
-/* Estilos para la temperatura y condiciones */
-.tempIMG {
-  display: flex;
-  padding: 10px;
-  flex-direction: column-reverse;
-  align-items: flex-end;
-}
-
-.Temperature {
-  display: inline;
-  font-size: 20px;
-  font-weight: bold;
-  margin-right: 15%;
-}
-
-.textCondition {
-  display: flex;
-  font-size: 15px !important;
-}
-
-.imageCondition {
-  cursor: pointer;
-}
-
-.imageCondition img {
-  width: 100px;
-  transition: opacity 0.3s ease;
-}
-
-.imageCondition p {
-  opacity: 0;
-  font-size: 10px;
-  position: absolute;
-  left: 8%;
-  bottom: 25%;
-  transition: opacity 0.3s ease;
-}
-
-.imageCondition:hover p {
-  opacity: 1;
-}
-
-/* Estilos para la información complementaria */
-.complementInfo {
-  position: absolute;
-  left: 22%;
-  flex-direction: column;
-  align-items: flex-end;
-  font-size: 12px;
-}
-
-/* Estilos para las coordenadas */
-.latitudelongitude {
-  position: absolute;
-  left: 3%;
-  bottom: 12%;
-  opacity: 0; /* Ocultar las coordenadas inicialmente */
-  cursor: pointer;
-  
-  transition: opacity 0.3s ease;
-}
-
-.principalInfo:hover .latitudelongitude {
-  opacity: 1; /* Mostrar las coordenadas al hacer hover en principalInfo */
-}
-/* Estilos para mostrar el mensaje "Click to copy" */
-.copy-message {
-  display: none;
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  transition: opacity 0.3s ease;
-}
-
-.latitudelongitude:hover .copy-message {
-  display: block; 
-  position: absolute;
-  bottom: 70%;
-}
-
-
-  /* Estilos para la última actualización */
-  .lastUpdate {
-    position: absolute;
-    font-size: 10px;
-    bottom: 0%;
-    right: 60%;
-    transition: font-size 0.5s ease-in-out;
-  }
-
-.lastUpdate:hover {
-  font-size: 14px;
-}
-
-/* Estilos para la información extra */
-.extraInfo {
-  position: absolute;
-  right: 0;
+.headerCurrentWeather{
+  position: fixed;
   top: 0;
-  width: 45%;
-  height: 90%;
-  background-color: rgba(0, 0, 0, 0.7);
-  border-radius: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  flex-direction: row;
   justify-content: space-between;
-  padding: 20px;
-  transition: all 3s ease-in-out;
-}
-
-.extraInfo div {
-  margin: 10px 0;
-  color: white;
-}
-
-.phaseName {
-  display: none;
-  color: #171a1f;
-  position: absolute;
-  margin: 2%;
-  top: 20%;
-  right: 4%;
-  transition: all 3s ease-in-out;
-}
-
-.moon {
-  position: relative;
-  cursor: pointer;
-}
-
-
-
-
-.moon .moonImg {
-  transform-origin: center; 
-  animation: floatMoon 5s ease-in-out infinite;
-}
-
-@keyframes floatMoon {
-  0% {
-    transform: translateY(0) rotate(var(--moon-rotation-angle, 0deg));
-  }
-  50% {
-    transform: translateY(-10px) rotate(var(--moon-rotation-angle, 0deg));
-  }
-  100% {
-    transform: translateY(0) rotate(var(--moon-rotation-angle, 0deg));
-  }
-}
-
-
-.moon:hover .phaseName {
-  display: flex;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.moon:hover .titlePhase {
-  display: none;
+  align-items: center;
+  width: 100%;
+  height: 50px;
 }
 
 .closeButton {
-  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
   background-color: transparent;
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  border-radius: 20px;
+  border: none;
+  border-radius: 10px;
+  color: var(--wildSand);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+} 
+
+.closeButton:hover {
+  transform: scale(1.1);
 }
 
-@media (max-width: 1000px){
-  .extraInfo {
-    display: block;
-    top: auto;
-    left: 20%;
-    height: 80%;
-  }
-  .principalInfo {
-    display: block;
-    position: absolute;
-    left:20%;
-  }
-  .Temperature {
-    font-size: 12px;
-  }
-  .tempIMG {
-    width: 30%;
-    position: relative;
-    left: 35%;
-  }
-  .complementInfo {
-    font-size: 8px;
-    right: 20%;
-  }
-  .latitudelongitude {
-    bottom: 10%;
-    right: 5%;
-  }
-  .textCondition {
-    font-size: 9px !important;
-    top: 60%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  .imageCondition img {
-    width: 60px;
-  }
-  .lastUpdate {
-    font-size: 8px !important;
-    bottom: 0%;
-    left: 15%;
-    width: 100%;
-  }
+.weather-details{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+  gap: 33px;
+}
 
-  .phaseName{
-    max-width: 110px;
-    left: 23%;
-    top: 12%;
+.ubicationCITY{
+  text-align: center;
+  font-weight: bold;
+}
+
+
+.tempIMG{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.5s ease-in-out;
+} 
+
+.imageCondition{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  aspect-ratio: 1/1;
+  cursor: pointer;
+}
+
+.textCondition{
+  margin-top: 0;
+  opacity: 0;
+}
+
+:not(.imageCondition:hover) .textCondition{
+  animation: downToUp 0.5s ease-in-out forwards;
+}
+
+.imageCondition:hover .textCondition{
+  animation: upToDown 0.5s ease-in-out forwards;
+}
+@keyframes upToDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
   }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes downToUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+
+.complementInfo{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.complementElement{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.complementElement h3{
+  
+  margin: 0;
+}
+
+.coordinatesDiv{
+  margin: 15px 0px;
+  display: flex;
+  flex-direction: space-beetween;
+  align-items: center;
+  aspect-ratio: 16/4;
+}
+
+p.copy-message{
+  padding: 0 5px;
+  background-color:var(--wildSand);
+  color: var(--mirage);
+  border-radius: 10px 10px 10px 0;
+  text-align: center;
+}
+
+.latitudelongitude{
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+div.solarGraph{
+padding: 10px;
+max-width: 100%;
+}
+
+div.solarGraphCanvas{
+  display: flex;
+  flex-direction: column;
+  aspect-ratio:auto;
+}
+
+h2.sunAltitud{
+  max-width: 100%;
+  font-size: 1.5rem;
+  text-align: center;
+  text-overflow: ellipsis;  
 }

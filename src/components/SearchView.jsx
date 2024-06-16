@@ -2,18 +2,21 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import ResultsList from './ResultsList';
 import './SearchView.css';
-import './CurrentWeather.css';
 
 const SearchView = () => {
 const [searchQuery, setSearchQuery] = useState('');
 const [searchResults, setSearchResults] = useState([]);
 const [errorMessage, setErrorMessage] = useState('');
+const [welcomeMessage, setWelcomeMessage] = useState('Welcome to Clim-J!');
+const [parragraph, setParragraph] = useState('Please enter a city and country to get the weather forecast.');
 
 const handleSearchInputChange = (e) => {
   setSearchQuery(e.target.value);
 };
 
 const handleSearchSubmit = async (e) => {
+  setWelcomeMessage('');
+  setParragraph('');
   e.preventDefault();
 
     try {
@@ -23,27 +26,48 @@ const handleSearchSubmit = async (e) => {
           language: 'en'
         },
         headers: {
-          'X-RapidAPI-Key': '1d247f045bmsh3233b6aa3ff3903p18e1dajsn1e168b9afdb0',
+          'X-RapidAPI-Key': 'eb0c8ce21amsheedb99b3cc56a0cp116bbfjsnd5a76f4f41e4',//leon
           'X-RapidAPI-Host': 'ai-weather-by-meteosource.p.rapidapi.com'
         }
       });
       setSearchResults(response.data);
-      console.log(response.data);
+      if (response.data.length === 0) {
+        setParragraph('No results found. Please try again.');
+        setTimeout(() => {
+          setParragraph('Please enter a city and country to get the weather forecast.');
+        }, 1500);
+      }    
     } catch (error) {
-      console.error(error);
-      setErrorMessage('Error: Unable to perform the search.'); 
+      console.error("error", error);
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 0 || error.request?.timeout) {
+          setWelcomeMessage('Maybe a Network problem...');
+          setParragraph('Please check your connection ☝️🤓');
+        } else {
+          setErrorMessage('Unable to perform the search.');
+        }
+      } else {
+        setErrorMessage('An unexpected error occurred.');
+      }
       setTimeout(() => {
         setErrorMessage('');
-      }, 5000); 
+        setWelcomeMessage('');
+        setParragraph('');
+      }, 3000);
     }
     setSearchQuery('');
 };
 
 return (
+  
   <div className="search-view">
+      <div className="welcomeMessage">
+        <h1 className='welcomeTitle'>{welcomeMessage}</h1>
+      <p>{parragraph}</p>
       {errorMessage && (
         <div className="error-message">{errorMessage}</div>
       )}
+      </div>
       <form onSubmit={handleSearchSubmit} className='form'>
         <input
           className='searchInput'

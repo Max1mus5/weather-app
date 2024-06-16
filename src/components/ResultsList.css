@@ -1,13 +1,13 @@
 .loading-image{
  transform: scale(0.3);
-  transition: transform 0.6s ease;
+ transition: transform 0.6s ease;
 }
 .loading-image:hover{
   transform: scale(0.4);
 }
 
 .Container{
-  margin-top:50px;
+  margin-top:1%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,7 +19,7 @@
   align-items: center;
   width: 100%;
   padding: 0px;
-  overflow: hidden;
+  padding: 30px  5px 0px;
 }
 .listContainer {
   display: grid;
@@ -29,7 +29,6 @@
   width: 100%;
   height: 80%;
   padding: 0px;
-  overflow: hidden;
   margin: 0px;
   gap: 10px; /* Adjusts the gap between grid items */
  }
@@ -46,14 +45,14 @@ color: var(--wildSand); /* Updated color */
 background: linear-gradient(180deg, var(--Scorpion) 1.56%, var(--Gray) 83.33%); /* Updated gradient */
 font-weight: bold;
 border-radius: 10px;
-transition: all 0.6s ease; 
+padding: 0 5px;
+transition: all 0.6s ease-in-out; 
 }
 
 .listElement:hover {
-transform: scale(1.1);
+transform: scale(1.05);
 background-color: var(--Heather); /* Updated hover background */
 font-size: 1.2rem;
-color: var(--Scorpion); /* Updated hover text color */
 cursor: pointer;
 box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.5);
 }
@@ -74,10 +73,6 @@ font-weight: bold;
 transition: font-size 0.6s ease;
 }
 
-.country:hover {
-font-size: 1.3rem;
-color: var(--Manatee); /* Updated hover color */
-}
 
 .city {
 color: var(--wildSand); /* Updated color */
@@ -87,10 +82,6 @@ margin-top: 0;
 transition: font-size 0.6s ease;
 }
 
-.city:hover {
-font-size: 1rem;
-color: var(--Manatee); /* Updated hover color */
-}
 
 .temperatureContainer {
 display: flex;
@@ -99,8 +90,8 @@ gap: 5px;
 }
 
 .temperatureImage {
-width: 16px !important;
-height: 16px !important;
+width: 16px ;
+height: 16px ;
 }
 
 .temperatureValue {

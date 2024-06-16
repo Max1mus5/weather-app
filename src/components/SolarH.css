@@ -1,0 +1,14 @@
+.solarGraph{
+  background-color: transparent;
+  animation: fadeIn 3s ease-out;
+  aspect-ratio: 16/4;
+}
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+  
+}
