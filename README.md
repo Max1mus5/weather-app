@@ -1,4 +1,4 @@
-# CLIM-J
+# CLIM-J 2.0
 
 ![Weather App Logo](https://github.com/Max1mus5/weather-app/assets/75461653/6cbdb56f-3d2a-487e-9ecf-6437b930087b)
 
@@ -9,9 +9,10 @@ Una aplicación simple para consultar el pronóstico del tiempo.
 - Consulta el pronóstico del tiempo actual.
 - Visualiza información de la luna y el sol.
 - Información complementaria actual.
+- Altura Solar y trayectoria en tiempo real <b>*(new)*</b>
 
 ## Capturas de Pantalla
-<img src="https://github.com/Max1mus5/weather-app/assets/75461653/9604322c-6d14-4aa4-b9a4-48d635c3dc70" alt="Screenshot 1" width="500"/> <img src="https://github.com/Max1mus5/weather-app/assets/75461653/8c694bcf-3a0b-4b60-a337-e17e9fe20ebd" alt="Screenshot 2" width="500"/>
+<img src=".\public\assets\home.png" alt="Screenshot 1" width="500"/> <img src=".\public\assets\results.png" alt="Screenshot 2" width="500"/>
 
 
 ## Instalación
@@ -36,4 +37,4 @@ Si deseas contribuir a este proyecto, sigue estos pasos:
 
 ## Licencia
 
-Este proyecto está bajo la licencia MIT. Para obtener más detalles, consulta el archivo [LICENSE](LICENSE).
+Este proyecto está bajo la licencia MIT. Para obtener más detalles, consulta el archivo [LICENSE](./LICENSE.md).
