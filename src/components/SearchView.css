@@ -175,6 +175,15 @@ input.searchInput{
 }
 
 
+@media screen and (max-width: 380px){
+  .welcomeMessage{
+    top: 50px;
+  }  
+  form.form{
+    z-index: 5;
+  }
+}a
+
 /* scroll bar styles */
 /* width */
 ::-webkit-scrollbar {
