@@ -20,6 +20,8 @@ const ResultsList = ({ results }) => {
   useEffect(() => {
     if (results.length > 0) {
       searchTemperature();
+      setInfo([]);
+      setIsLoading(true);
     }
     // eslint-disable-next-line
   }, [results]);
@@ -53,7 +55,7 @@ const ResultsList = ({ results }) => {
     setInfo(infoComplet);
 /*     setLast_updated(lastupdate);*/
    
-    console.log("info Complete",infoComplet);
+    //console.log("info Complete",infoComplet);
     setIsLoading(false);
   };
 
@@ -77,18 +79,18 @@ const ResultsList = ({ results }) => {
     if (selectedItem === index) {
       // If the clicked item is already selected, toggle the showCurrentWeather state
       setShowCurrentWeather((prevState) => !prevState);
-      console.log("selectetItem: ",index, ":", showCurrentWeather);
+      //console.log("selectetItem: ",index, ":", showCurrentWeather);
     } else {
       // If a different item is clicked, update the selectedItem and showCurrentWeather states
       setSelectedItem(index);
       setShowCurrentWeather(true);
-      console.log("selectedItem:",index, ":", showCurrentWeather);
+      //console.log("selectedItem:",index, ":", showCurrentWeather);
     }
   };
 
   const handleClose =()=>{
     setShowCurrentWeather(false);
-    console.log("close: ", showCurrentWeather);
+    //console.log("close: ", showCurrentWeather);
     setSelectedItem(null);
   }
 
