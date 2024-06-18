@@ -116,7 +116,7 @@ const SolarH = ({ dataLocation, astroInfo, sunInfo }) => {
 
   const fetchTimeZoneData = async (timeZone) => {
     try {
-      const response = await fetch(`http://worldtimeapi.org/api/timezone/${timeZone}`);
+      const response = await fetch(`https://worldtimeapi.org/api/timezone/${timeZone}`);
       const data = await response.json();
       /* set localHour "datetime": "2024-06-15T15:31:16.395237-05:00" */
       /* setLocalHour(data.datetime.split('T')[1].split('.')[0]); */
