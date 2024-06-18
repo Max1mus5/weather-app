@@ -1,18 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import SolarLineChart from './SolarLineChart.jsx';
 import "./SolarH.css";
 
-const SolarH = ({ dataLocation, astroInfo }) => {
-  const [latitude] = useState(dataLocation.location.lat); 
-  const [longitude] = useState(dataLocation.location.lon); 
-  const [tzIdentifier] = useState(dataLocation.location.tz_id); 
-  const [localHour,setLocalHour] = useState();
+const SolarH = ({ dataLocation, astroInfo, sunInfo }) => {
+  const [chartData, setChartData] = useState([]);
+  const [sunRise, setSunRise] = useState(null);
+  const [sunSet, setSunSet] = useState(null);
+  const [latitude] = useState(dataLocation.location.lat);
+  const [longitude] = useState(dataLocation.location.lon);
+  const [tzIdentifier] = useState(dataLocation.location.tz_id);
+  const [localHour, setLocalHour] = useState();
+  const [sunRiseHourHH, setSunRiseHourHH] = useState();
+  const [sunSetHourHH, setSunSetHourHH] = useState();
   const [localHourHH, setLocalHourHH] = useState();
   const [localHourMM, setLocalHourMM] = useState();
   const [offsetUTC, setOffsetUTC] = useState();
   const [altitude, setAltitude] = useState();
   const [error, setError] = useState('');
-  const [declination, setDeclination] = useState(null); 
-
+  const [declination, setDeclination] = useState(null);
   useEffect(() => {
     const interval = setInterval(() => {
        // "2024-06-15T15:31:16.395237-05:00"
@@ -58,7 +63,30 @@ const SolarH = ({ dataLocation, astroInfo }) => {
   
     return () => clearInterval(interval); // Clean up the interval on component unmount
   }, [localHour]);
-  
+
+   useEffect(() => {
+    if (sunInfo) {
+      setSunRise(sunInfo.sun.rise.split('T')[1]);
+      setSunSet(sunInfo.sun.set.split('T')[1]);
+    }
+  }, [sunInfo]);
+
+  useEffect(() => {
+    if (sunRise) {
+      const sunRiseHourParts = sunRise.split(':');
+      const sunRiseHourHH = parseInt(sunRiseHourParts[0], 10);
+      const sunSetHourParts = sunSet.split(':');
+      const sunSetHourHH = parseInt(sunSetHourParts[0], 10);
+      setSunRiseHourHH(sunRiseHourHH);
+      setSunSetHourHH(sunSetHourHH);
+    }
+  }, [sunRise]);
+
+  useEffect(() => {
+      const newData = generateChartData(localHourHH, localHourMM);
+      setChartData(newData);
+    
+  }, [sunRiseHourHH, localHourHH, localHourMM]); 
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -115,7 +143,7 @@ const SolarH = ({ dataLocation, astroInfo }) => {
     const altitudResult = Math.asin(sinAltitud) * (180 / Math.PI);
     
     setAltitude(altitudResult);
-    return localSolarHour; // Return the solar hour 
+    return altitudResult; // Return the solar hour 
   }
 
   const handleSubmit = (e) => {
@@ -123,6 +151,77 @@ const SolarH = ({ dataLocation, astroInfo }) => {
     const horaSolarLocalCalculada = calcularHoraSolarLocal(localHour, longitude, offsetUTC);
     calcularAlturaSolar(horaSolarLocalCalculada);
   }
+
+  const splitHour = (hour) => { // Split the hour in parts
+    if(hour){
+      return hour.split(':');
+    }
+  }
+
+  //decrement 1H hour
+  const decrementHour = (hour) => {
+    const timeParts = splitHour(hour);
+    if (timeParts) {
+      let hours = parseInt(timeParts[0], 10);
+      let minutes = parseInt(timeParts[1], 10);
+      let seconds = parseInt(timeParts[2], 10);
+
+      hours--;
+
+      if (hours < 0) {
+        hours = 23;
+      }
+
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+  };
+
+  //decrement 1min hour
+  const decrementMin = (hour) => {
+    const timeParts = splitHour(hour);
+    if (timeParts) {
+      let hours = parseInt(timeParts[0], 10);
+      let minutes = parseInt(timeParts[1], 10);
+      let seconds = parseInt(timeParts[2], 10);
+
+      minutes--;
+
+      if (minutes < 0) {
+        minutes = 59;
+      }
+
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+  };
+
+  const generateChartData = (localHourHH, localHourMM) => {
+    const data = [];
+    let currentHour = localHour;
+    while (localHourHH >= sunRiseHourHH) {
+      while(localHourMM >= 0){
+        const timelocalHour = localHourHH + localHourMM / 60;
+      const localSolarHour = calcularHoraSolarLocal(timelocalHour, longitude, offsetUTC);
+      const heightSun = calcularAlturaSolar(localSolarHour);
+      if(heightSun > 0 || localHourHH === sunRiseHourHH || localHourHH === sunSetHourHH){
+        data.push({ time: currentHour, heightSun: heightSun });
+      }
+      currentHour = decrementMin(currentHour);
+      localHourMM--;
+      }
+      if (localHourMM < 0) {
+        localHourMM = 59;
+      }
+      if(localHourHH < 0){
+        localHourHH = 23;
+      }
+      currentHour = decrementHour(currentHour);
+      localHourHH--;
+    }
+    //retornar invertido el array
+    return data.reverse();
+  };
+
+  
 
   return (
     <div className='solarGraph'>
@@ -132,9 +231,14 @@ const SolarH = ({ dataLocation, astroInfo }) => {
       </form>}
       {altitude!== null && (
         <div className='solarGraphCanvas'>
-          <p>Local Hour ( {offsetUTC} ): {localHour? localHour : 'Loading...'}</p>
-          <h2 className='sunAltitud'>Sun Altitude: {altitude? altitude?.toFixed(2)+'°' : 'Calculating...'}</h2>
+          <div className='Sun-Hour'>
+            <p><b>Local Hour ( {offsetUTC} ) </b> <span>{localHour? localHour : 'Loading...'}</span></p>
+            <p className='sunAltitud'><b>Sun Altitude</b> <span>{altitude? altitude?.toFixed(2)+'°' : 'Calculating...'}</span></p>
+          </div>
+          {/*create the line chart calling SolarlineChart  */}
+          {chartData.length > 0 ? <SolarLineChart data={chartData} className="SolarLineChart" /> : <p>The sun is not yet up 😎</p>}
         </div>
+        
       )}
     </div>
   );

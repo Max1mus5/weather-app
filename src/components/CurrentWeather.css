@@ -58,8 +58,8 @@ color: var(--wildSand);
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   background-color: transparent;
   border: none;
   border-radius: 10px;
@@ -184,6 +184,34 @@ p.copy-message{
   cursor: pointer;
 }
 
+.moon{
+  width: 100%;
+  margin-bottom: 10%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.monnPhase{
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+p.phaseName{
+  margin: 0px;
+}
+strong.titlePhase{
+  font-size: 1.3rem;
+}
+
+div.Sun-Hour p{
+  margin: 0px;
+}
+
 div.solarGraph{
 padding: 10px;
 max-width: 100%;
@@ -200,4 +228,24 @@ h2.sunAltitud{
   font-size: 1.5rem;
   text-align: center;
   text-overflow: ellipsis;  
+}
+
+.sunInfoCurrentWeather{
+  display: flex;
+  flex-direction:row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* phone view */
+@media screen and (max-width: 960px){
+  .weather-details{
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }  
+  .principalInfo{
+    margin-top: 30px;
+  }
 }

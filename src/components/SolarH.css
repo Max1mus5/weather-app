@@ -3,6 +3,21 @@
   animation: fadeIn 3s ease-out;
   aspect-ratio: 16/4;
 }
+
+.Sun-Hour{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    transition: all 0.5s ease-in-out;
+}
+
+.Sun-Hour:hover > span{
+    transform: scale(1.5);
+}
+
+
 @keyframes fadeIn {
     0% {
         opacity: 0;
@@ -11,4 +26,9 @@
         opacity: 1;
     }
   
+}
+
+circle{
+    color: bisque;
+    fill: bisque;
 }

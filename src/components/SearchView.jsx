@@ -26,7 +26,7 @@ const handleSearchSubmit = async (e) => {
           language: 'en'
         },
         headers: {
-          'X-RapidAPI-Key': 'eb0c8ce21amsheedb99b3cc56a0cp116bbfjsnd5a76f4f41e4',//leon
+          'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,//ligoleyen
           'X-RapidAPI-Host': 'ai-weather-by-meteosource.p.rapidapi.com'
         }
       });
@@ -40,9 +40,9 @@ const handleSearchSubmit = async (e) => {
     } catch (error) {
       console.error("error", error);
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 0 || error.request?.timeout) {
+        if (error.response?.status === 0 || error.request?.timeout || error.message === "Network Error") {
           setWelcomeMessage('Maybe a Network problem...');
-          setParragraph('Please check your connection ☝️🤓');
+          setParragraph('Please check your internet connection ☝️🤓');
         } else {
           setErrorMessage('Unable to perform the search.');
         }

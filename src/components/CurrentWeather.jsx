@@ -95,7 +95,7 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
       url: 'https://wyjyt-geo-calculate.p.rapidapi.com/Sky',
       headers: {
         'content-type': 'application/json',
-        'X-RapidAPI-Key': 'eb0c8ce21amsheedb99b3cc56a0cp116bbfjsnd5a76f4f41e4',//leon
+        'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,//ligoleyen
         'X-RapidAPI-Host': 'wyjyt-geo-calculate.p.rapidapi.com'
       },
       data: {
@@ -121,7 +121,7 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
             timezone: 'auto'
           },
           headers: {
-            'X-RapidAPI-Key': 'eb0c8ce21amsheedb99b3cc56a0cp116bbfjsnd5a76f4f41e4',//leon
+            'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,//ligoleyen
             'X-RapidAPI-Host': 'ai-weather-by-meteosource.p.rapidapi.com'
           }
         };
@@ -196,7 +196,7 @@ const copyCoordinates = () => {
       }, 2000); // Reiniciar el estado después de 2 segundos
     })
     .catch((error) => {
-      console.error('Error On Copy:', error);
+      console.error('Error On Copy ', error);
     });
 }
 
@@ -215,7 +215,7 @@ const copyCoordinates = () => {
         </div>
         <CloseButton className='closeButton' onClick={() => {
           close();
-/*           console.log("closed : ", showCurrentWeather);
+/*           console.log("closed   ", showCurrentWeather);
  */        }}>
           <svg width="80px" height="80px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="#f7f7f7" stroke-width="1.5" stroke-linecap="round"></path> <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="#f7f7f7" stroke-width="1.5" stroke-linecap="round"></path> </g></svg>
         </CloseButton>
@@ -281,32 +281,37 @@ const copyCoordinates = () => {
                 <div className='coordinatesDiv'>
                   <div className='latitudelongitude' onClick={copyCoordinates}>
                     <div>
-                      <strong>Latitude:</strong> {data.location.lat}
+                      <strong>Latitude </strong> {data.location.lat}
                     </div>
                     <div>
-                      <strong>Longitude:</strong> {data.location.lon}
+                      <strong>Longitude </strong> {data.location.lon}
                     </div>
                   </div>
                   {showMessage && <p className="copy-message">Copied!</p>}
                 </div>
                 <div className='lastUpdate'> 
-                  <strong>Last Update:</strong> <i>{data.current.last_updated}</i>
+                  <strong>Last Update </strong> <i>{data.current.last_updated}</i>
                 </div>
               </div>
               <div className='extraInfo'>
                 <div className='moon'>
-                  <strong className='titlePhase'>Moon Phase:</strong> 
+                  <div className='monnPhase'>
+                  <strong className='titlePhase'>Moon Phase </strong> 
+                  <p className='phaseName'> {astroInfo?.moon?.illumination?.phaseName}</p>
+                  </div>
                   <div className="moonImg" style={{ '--moon-rotation-angle': `${astroInfo?.moon?.declination}deg` }}>
                     {getMoonPhaseIcon(astroInfo.moon.illumination.phaseName)}
                   </div>
-                  <p className='phaseName'>{astroInfo?.moon?.illumination?.phaseName}</p>
+                 
                 </div>
-                 <SolarH dataLocation={dataLocation} astroInfo={astroInfoFix} className="SolarH" />
-                <div>
-                  <strong>Sunrise:</strong> {sunInfo?.sun?.rise.split('T')[1]}
-                </div>
-                <div>
-                  <strong>Sunset:</strong> {sunInfo?.sun?.set.split('T')[1]}
+                 <SolarH dataLocation={dataLocation} astroInfo={astroInfoFix} sunInfo={sunInfo} className="SolarH" />
+                <div className='sunInfoCurrentWeather'>
+                  <div>
+                    <strong>Sunrise </strong> {sunInfo?.sun?.rise.split('T')[1]}
+                  </div>
+                  <div>
+                    <strong>Sunset </strong> {sunInfo?.sun?.set.split('T')[1]}
+                  </div>
                 </div>
               </div>
           </div>
