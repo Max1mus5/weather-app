@@ -26,7 +26,7 @@ const handleSearchSubmit = async (e) => {
           language: 'en'
         },
         headers: {
-          'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,//ligoleyen
+          'X-RapidAPI-Key': 'c226bb7480msh1c197da85b4db7bp145e99jsnc213b14f7856',//ligoleyen
           'X-RapidAPI-Host': 'ai-weather-by-meteosource.p.rapidapi.com'
         }
       });

@@ -95,7 +95,7 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
       url: 'https://wyjyt-geo-calculate.p.rapidapi.com/Sky',
       headers: {
         'content-type': 'application/json',
-        'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,//ligoleyen
+        'X-RapidAPI-Key': 'c226bb7480msh1c197da85b4db7bp145e99jsnc213b14f7856',//ligoleyen
         'X-RapidAPI-Host': 'wyjyt-geo-calculate.p.rapidapi.com'
       },
       data: {
@@ -121,7 +121,7 @@ const CurrentWeather = ({ data, location, temperature, state, close }) => {
             timezone: 'auto'
           },
           headers: {
-            'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,//ligoleyen
+            'X-RapidAPI-Key': 'c226bb7480msh1c197da85b4db7bp145e99jsnc213b14f7856',//ligoleyen
             'X-RapidAPI-Host': 'ai-weather-by-meteosource.p.rapidapi.com'
           }
         };
