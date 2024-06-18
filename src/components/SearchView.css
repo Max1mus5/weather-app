@@ -91,6 +91,7 @@ form.form{
   align-items: center;
   justify-content: center;
   gap: 10px;
+  z-index: 5;
 }
 
 input.searchInput{

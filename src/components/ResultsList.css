@@ -118,3 +118,27 @@ font-weight: bold;
     transition: font-size 0.6s ease, height 0.2s ease-in-out; /* Include height in the transition */
   }
 }
+
+@media screen and (max-width: 768px)  {
+  .Container{
+    margin-top:1%;
+    display: flex;
+    align-items:normal;
+    justify-content: center;
+    max-width: 350px;
+    height: 300px;
+    overflow: auto;
+  }
+}
+
+@media screen and (max-height: 500px) {
+  .Container{
+    margin-top:1%;
+    display: flex;
+    align-items:normal;
+    justify-content: center;
+    max-width: 350px;
+    height: 300px;
+    overflow: auto;
+  }
+}
