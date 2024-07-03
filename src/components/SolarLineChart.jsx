@@ -28,7 +28,7 @@ const SolarLineChart = ({ data }) => {
       .range([0, width]);
 
     const yScale = d3.scaleLinear()
-      .domain([d3.min(dataWithSeconds, d => d.heightSun), d3.max(dataWithSeconds, d => d.heightSun)])
+      .domain([0, d3.max(dataWithSeconds, d => d.heightSun)]) // Start from 0 degrees
       .range([height, 0]);
 
     const lineGenerator = d3.line()
