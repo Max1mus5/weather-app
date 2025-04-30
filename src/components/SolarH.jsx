@@ -20,47 +20,53 @@ const SolarH = ({ dataLocation, astroInfo, sunInfo }) => {
   const [declination, setDeclination] = useState(null);
   useEffect(() => {
     const interval = setInterval(() => {
-      // Format from new API: "HH:MM:SS"
+      // Manejar diferentes formatos de hora posibles
       let timeParts = localHour?.split(':');
-      if (!timeParts || timeParts.length < 3) {
-        console.error("localHour no tiene el formato esperado");
-        return; //Exit if timeParts is empty or doesn't have enough parts
+      
+      // Validar el formato de la hora
+      if (!timeParts || timeParts.length < 2) {
+        console.error("localHour no tiene el formato esperado:", localHour);
+        return; // Salir si el formato no es válido
       }
 
-      // Converts the string to integers
+      // Convertir a enteros
       let hours = parseInt(timeParts[0], 10);
-      setLocalHourHH(parseInt(hours));
+      setLocalHourHH(hours);
+      
       let minutes = parseInt(timeParts[1], 10);
-      setLocalHourMM(parseInt(minutes));
-      let seconds = parseInt(timeParts[2], 10);
+      setLocalHourMM(minutes);
+      
+      // Si no hay segundos, asumimos 0
+      let seconds = timeParts.length >= 3 ? parseInt(timeParts[2], 10) : 0;
   
-      //plus seconds
+      // Incrementar segundos
       seconds++;
   
-      // if seconds reach 60, restart 0
+      // Si los segundos llegan a 60, reiniciar a 0 e incrementar minutos
       if (seconds >= 60) {
         minutes++;
-        seconds = 0; // Reiniciar segundos
+        seconds = 0;
       }
   
-      // If minutes reach 60, restart hours
+      // Si los minutos llegan a 60, reiniciar a 0 e incrementar horas
       if (minutes >= 60) {
         hours++;
-        minutes = 0; // Restart minutes
+        minutes = 0;
       }
 
-      if (hours >= 24){
+      // Si las horas llegan a 24, reiniciar a 0
+      if (hours >= 24) {
         hours = 0;
       }
   
-      // Reconstructs The string to the updated hour
+      // Reconstruir la cadena de hora con formato HH:MM:SS
       let newTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   
-      // Set the new Hour
+      // Establecer la nueva hora
       setLocalHour(newTime);     
     }, 1000);
   
-    return () => clearInterval(interval); // Clean up the interval on component unmount
+    return () => clearInterval(interval); // Limpiar el intervalo al desmontar el componente
   }, [localHour]);
 
    useEffect(() => {
@@ -115,94 +121,165 @@ const SolarH = ({ dataLocation, astroInfo, sunInfo }) => {
 
   const fetchTimeZoneData = async (timeZone) => {
     try {
-      // Extract city from timezone (e.g., "America/Bogota" -> "Bogota")
-      const city = timeZone.split('/').pop();
+      // PRIMERA OPCIÓN: AbstractAPI
+      // Extract location from timezone (e.g., "America/Bogota" -> "Bogota, Colombia")
+      const location = timeZone.split('/').pop().replace('_', ' ');
       
-      // Using axios which is already in the project dependencies
-      const response = await fetch(`https://api.apiverve.com/v1/worldtime?city=${city}`, {
-        headers: {
-          'x-api-key': 'b904b5b8-ecc5-4bfc-adf5-3511279dbeef',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+      // Usar AbstractAPI como fuente principal
+      const abstractApiUrl = `https://timezone.abstractapi.com/v1/current_time/?api_key=6a313bc4cdd44339a3975bf6bdc4e289&location=${location}`;
+      
+      const abstractResponse = await fetch(abstractApiUrl);
+      const abstractData = await abstractResponse.json();
+      
+      // Verificar si la respuesta es válida
+      if (abstractData && abstractData.datetime) {
+        console.log('Using AbstractAPI time data:', abstractData);
+        
+        // Extraer la hora del formato "2025-04-30 16:33:09"
+        const timeParts = abstractData.datetime.split(' ')[1].split(':');
+        const timeString = timeParts.join(':');
+        
+        setLocalHour(timeString);
+        
+        // Usar el offset GMT directamente proporcionado por la API
+        setOffsetUTC(abstractData.gmt_offset);
+        
+        return; // Salir de la función si la primera API funciona
+      }
+      
+      throw new Error('AbstractAPI response invalid or missing data');
+      
+    } catch (firstApiError) {
+      console.error('Error fetching time from AbstractAPI:', firstApiError);
+      
+      try {
+        // SEGUNDA OPCIÓN: ApiVerve como respaldo
+        console.log('Falling back to ApiVerve...');
+        const city = timeZone.split('/').pop();
+        
+        const response = await fetch(`https://api.apiverve.com/v1/worldtime?city=${city}`, {
+          headers: {
+            'x-api-key': 'b904b5b8-ecc5-4bfc-adf5-3511279dbeef',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        });
+        
+        const responseData = await response.json();
+        
+        if (responseData.status === 'ok' && responseData.data && responseData.data.foundCities && responseData.data.foundCities.length > 0) {
+          console.log('Using ApiVerve time data:', responseData);
+          
+          // Use the first city in the response
+          const data = responseData.data.foundCities[0];
+          
+          // Format the time to match the expected format (HH:MM:SS)
+          // Ensure we have seconds in the time format
+          if (data.time24.split(':').length === 2) {
+            // If time24 is in format HH:MM, add seconds
+            setLocalHour(`${data.time24}:00`);
+          } else {
+            setLocalHour(data.time24);
+          }
+          
+          // Extract UTC offset from timezone info
+          const offsetStr = data.dst_name;
+          let offset;
+          
+          if (offsetStr.startsWith('-') || offsetStr.startsWith('+')) {
+            // If it's a direct offset like "-03"
+            offset = parseInt(offsetStr);
+          } else {
+            // For named timezones like "PDT" (UTC-7), "EST" (UTC-5), etc.
+            const timezoneMap = {
+              'PDT': -7, 'PST': -8, 'EDT': -4, 'EST': -5, 'CDT': -5, 'CST': -6, 
+              'MDT': -6, 'MST': -7, 'AKDT': -8, 'AKST': -9, 'HDT': -9, 'HST': -10,
+              'BST': 1, 'GMT': 0, 'CET': 1, 'CEST': 2, 'EET': 2, 'EEST': 3
+            };
+            offset = timezoneMap[offsetStr] || 0;
+          }
+          
+          setOffsetUTC(offset);
+          return; // Salir si la segunda API funciona
         }
-      });
-      
-      const responseData = await response.json();
-      
-      if (responseData.status !== 'ok' || !responseData.data || !responseData.data.foundCities || responseData.data.foundCities.length === 0) {
-        throw new Error('No time data found for this city');
+        
+        throw new Error('ApiVerve response invalid or missing data');
+        
+      } catch (secondApiError) {
+        console.error('Error fetching time from ApiVerve:', secondApiError);
+        
+        // TERCERA OPCIÓN: Hora local como último respaldo
+        console.log('Falling back to local browser time...');
+        
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        const localTimeString = `${hours}:${minutes}:${seconds}`;
+        
+        setLocalHour(localTimeString);
+        
+        // Estimate UTC offset from local browser
+        const offsetInHours = -now.getTimezoneOffset() / 60;
+        setOffsetUTC(offsetInHours);
+        
+        console.log('Using fallback local time:', localTimeString, 'with offset:', offsetInHours);
+        setError('Using local time as fallback');
       }
-      
-      // Use the first city in the response
-      const data = responseData.data.foundCities[0];
-      
-      // Format the time to match the expected format (HH:MM:SS)
-      // Ensure we have seconds in the time format
-      if (data.time24.split(':').length === 2) {
-        // If time24 is in format HH:MM, add seconds
-        setLocalHour(`${data.time24}:00`);
-      } else {
-        setLocalHour(data.time24);
-      }
-      
-      // Extract UTC offset from timezone info
-      // The API returns the offset in a different format, so we need to parse it
-      // DST name like "-03" or "PDT" contains the offset information
-      const offsetStr = data.dst_name;
-      let offset;
-      
-      if (offsetStr.startsWith('-') || offsetStr.startsWith('+')) {
-        // If it's a direct offset like "-03"
-        offset = parseInt(offsetStr);
-      } else {
-        // For named timezones like "PDT" (UTC-7), "EST" (UTC-5), etc.
-        // We need to map these to their UTC offsets
-        const timezoneMap = {
-          'PDT': -7, 'PST': -8, 'EDT': -4, 'EST': -5, 'CDT': -5, 'CST': -6, 
-          'MDT': -6, 'MST': -7, 'AKDT': -8, 'AKST': -9, 'HDT': -9, 'HST': -10
-        };
-        offset = timezoneMap[offsetStr] || 0;
-      }
-      
-      setOffsetUTC(offset);
-    } catch (err) {
-      console.error('Error fetching time data:', err);
-      setError('Error getting the timezone information');
-      
-      // Fallback: Use local browser time as a backup
-      const now = new Date();
-      const hours = now.getHours().toString().padStart(2, '0');
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      const seconds = now.getSeconds().toString().padStart(2, '0');
-      const localTimeString = `${hours}:${minutes}:${seconds}`;
-      
-      setLocalHour(localTimeString);
-      
-      // Estimate UTC offset from local browser
-      const offsetInHours = -now.getTimezoneOffset() / 60;
-      setOffsetUTC(offsetInHours);
-      
-      console.log('Using fallback local time:', localTimeString, 'with offset:', offsetInHours);
     }
   };
 
   const calcularHoraSolarLocal = (timelocalHour, longitude, offsetUTC) => {
-    return parseFloat(timelocalHour) + (longitude / 15) - parseFloat(offsetUTC);
+    // Validar que tenemos todos los datos necesarios
+    if (timelocalHour === undefined || longitude === undefined || offsetUTC === undefined) {
+      console.warn('Datos insuficientes para calcular la hora solar local:', {
+        timelocalHour, longitude, offsetUTC
+      });
+      return 12; // Valor por defecto (mediodía)
+    }
+    
+    try {
+      // Convertir a números y calcular
+      const hourValue = parseFloat(timelocalHour);
+      const longitudeValue = parseFloat(longitude);
+      const offsetValue = parseFloat(offsetUTC);
+      
+      return hourValue + (longitudeValue / 15) - offsetValue;
+    } catch (error) {
+      console.error('Error al calcular la hora solar local:', error);
+      return 12; // Valor por defecto en caso de error
+    }
   }
 
   const calcularAlturaSolar = (localSolarHour) => {
-    const latitudRad = latitude * (Math.PI / 180);
-    const declinacionRad = declination  * (Math.PI / 180);
-    const anguloHorario = 15 * (localSolarHour - 12);
-    const anguloHorarioRad = anguloHorario * (Math.PI / 180);
+    // Validar que tenemos todos los datos necesarios
+    if (latitude === undefined || declination === undefined || localSolarHour === undefined) {
+      console.warn('Datos insuficientes para calcular la altura solar:', {
+        latitude, declination, localSolarHour
+      });
+      return 0; // Valor por defecto
+    }
     
-    const sinAltitud = (Math.sin(latitudRad) * Math.sin(declinacionRad) +
-                        Math.cos(latitudRad) * Math.cos(declinacionRad) * Math.cos(anguloHorarioRad));
-    
-    const altitudResult = Math.asin(sinAltitud) * (180 / Math.PI);
-    
-    setAltitude(altitudResult);
-    return altitudResult; // Return the solar hour 
+    try {
+      const latitudRad = latitude * (Math.PI / 180);
+      const declinacionRad = declination * (Math.PI / 180);
+      const anguloHorario = 15 * (localSolarHour - 12);
+      const anguloHorarioRad = anguloHorario * (Math.PI / 180);
+      
+      const sinAltitud = (Math.sin(latitudRad) * Math.sin(declinacionRad) +
+                          Math.cos(latitudRad) * Math.cos(declinacionRad) * Math.cos(anguloHorarioRad));
+      
+      // Asegurar que el valor está dentro del rango válido para asin (-1 a 1)
+      const sinAltitudClamped = Math.max(-1, Math.min(1, sinAltitud));
+      
+      const altitudResult = Math.asin(sinAltitudClamped) * (180 / Math.PI);
+      
+      setAltitude(altitudResult);
+      return altitudResult;
+    } catch (error) {
+      console.error('Error al calcular la altura solar:', error);
+      return 0; // Valor por defecto en caso de error
+    }
   }
 
   const handleSubmit = (e) => {
@@ -212,71 +289,113 @@ const SolarH = ({ dataLocation, astroInfo, sunInfo }) => {
   }
 
   const splitHour = (hour) => { // Split the hour in parts
-    if(hour){
-      return hour.split(':');
+    if (!hour) return null;
+    
+    const parts = hour.split(':');
+    // Asegurar que siempre devolvemos un array con 3 elementos (horas, minutos, segundos)
+    if (parts.length === 2) {
+      // Si solo tenemos HH:MM, añadir segundos
+      parts.push('00');
+    } else if (parts.length !== 3) {
+      console.error('Formato de hora inválido:', hour);
+      return null;
     }
+    
+    return parts;
   }
 
   //decrement 1H hour
   const decrementHour = (hour) => {
     const timeParts = splitHour(hour);
-    if (timeParts) {
-      let hours = parseInt(timeParts[0], 10);
-      let minutes = parseInt(timeParts[1], 10);
-      let seconds = parseInt(timeParts[2], 10);
+    if (!timeParts) return hour; // Si no podemos procesar, devolver la hora original
+    
+    let hours = parseInt(timeParts[0], 10);
+    let minutes = parseInt(timeParts[1], 10);
+    let seconds = parseInt(timeParts[2], 10);
 
-      hours--;
+    hours--;
 
-      if (hours < 0) {
-        hours = 23;
-      }
-
-      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    if (hours < 0) {
+      hours = 23;
     }
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
   //decrement 1min hour
   const decrementMin = (hour) => {
     const timeParts = splitHour(hour);
-    if (timeParts) {
-      let hours = parseInt(timeParts[0], 10);
-      let minutes = parseInt(timeParts[1], 10);
-      let seconds = parseInt(timeParts[2], 10);
+    if (!timeParts) return hour; // Si no podemos procesar, devolver la hora original
+    
+    let hours = parseInt(timeParts[0], 10);
+    let minutes = parseInt(timeParts[1], 10);
+    let seconds = parseInt(timeParts[2], 10);
 
-      minutes--;
+    minutes--;
 
-      if (minutes < 0) {
-        minutes = 59;
+    if (minutes < 0) {
+      minutes = 59;
+      hours--;
+      if (hours < 0) {
+        hours = 23;
       }
-
-      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const generateChartData = (localHourHH, localHourMM) => {
+    // Validar que tenemos todos los datos necesarios
+    if (localHourHH === undefined || localHourMM === undefined || 
+        sunRiseHourHH === undefined || !localHour || !offsetUTC) {
+      console.warn('Datos insuficientes para generar el gráfico:', {
+        localHourHH, localHourMM, sunRiseHourHH, localHour, offsetUTC
+      });
+      return [];
+    }
+    
     const data = [];
     let currentHour = localHour;
-    while (localHourHH >= sunRiseHourHH) {
-      while(localHourMM >= 0){
-        const timelocalHour = localHourHH + localHourMM / 60;
-      const localSolarHour = calcularHoraSolarLocal(timelocalHour, longitude, offsetUTC);
-      const heightSun = calcularAlturaSolar(localSolarHour);
-      if(heightSun > 0 || localHourHH === sunRiseHourHH || localHourHH === sunSetHourHH){
-        data.push({ time: currentHour, heightSun: heightSun });
+    let tempLocalHourHH = localHourHH;
+    let tempLocalHourMM = localHourMM;
+    
+    // Limitar el número de iteraciones para evitar bucles infinitos
+    const maxIterations = 24 * 60; // 24 horas * 60 minutos
+    let iterations = 0;
+    
+    while (tempLocalHourHH >= sunRiseHourHH && iterations < maxIterations) {
+      while(tempLocalHourMM >= 0 && iterations < maxIterations){
+        const timelocalHour = tempLocalHourHH + tempLocalHourMM / 60;
+        const localSolarHour = calcularHoraSolarLocal(timelocalHour, longitude, offsetUTC);
+        const heightSun = calcularAlturaSolar(localSolarHour);
+        
+        if(heightSun > 0 || tempLocalHourHH === sunRiseHourHH || tempLocalHourHH === sunSetHourHH){
+          data.push({ time: currentHour, heightSun: heightSun });
+        }
+        
+        currentHour = decrementMin(currentHour);
+        tempLocalHourMM--;
+        iterations++;
       }
-      currentHour = decrementMin(currentHour);
-      localHourMM--;
+      
+      if (tempLocalHourMM < 0) {
+        tempLocalHourMM = 59;
       }
-      if (localHourMM < 0) {
-        localHourMM = 59;
+      
+      if(tempLocalHourHH < 0){
+        tempLocalHourHH = 23;
       }
-      if(localHourHH < 0){
-        localHourHH = 23;
-      }
+      
       currentHour = decrementHour(currentHour);
-      localHourHH--;
+      tempLocalHourHH--;
+      iterations++;
     }
-    //retornar invertido el array
+    
+    if (iterations >= maxIterations) {
+      console.warn('Se alcanzó el límite máximo de iteraciones al generar datos del gráfico');
+    }
+    
+    // Retornar el array invertido
     return data.reverse();
   };
 
