@@ -20,11 +20,11 @@ const SolarH = ({ dataLocation, astroInfo, sunInfo }) => {
   const [declination, setDeclination] = useState(null);
   useEffect(() => {
     const interval = setInterval(() => {
-       // "2024-06-15T15:31:16.395237-05:00"
+      // Format from new API: "HH:MM:SS"
       let timeParts = localHour?.split(':');
-      if (!timeParts) {
+      if (!timeParts || timeParts.length < 3) {
         console.error("localHour no tiene el formato esperado");
-        return; //Exit if timeParts is empty
+        return; //Exit if timeParts is empty or doesn't have enough parts
       }
 
       // Converts the string to integers
@@ -49,13 +49,12 @@ const SolarH = ({ dataLocation, astroInfo, sunInfo }) => {
         minutes = 0; // Restart minutes
       }
 
-      if (hours > 24){
-        hours= 0;
+      if (hours >= 24){
+        hours = 0;
       }
   
       // Reconstructs The string to the updated hour
       let newTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  
   
       // Set the new Hour
       setLocalHour(newTime);     
@@ -116,14 +115,74 @@ const SolarH = ({ dataLocation, astroInfo, sunInfo }) => {
 
   const fetchTimeZoneData = async (timeZone) => {
     try {
-      const response = await fetch(`https://worldtimeapi.org/api/timezone/${timeZone}`);
-      const data = await response.json();
-      /* set localHour "datetime": "2024-06-15T15:31:16.395237-05:00" */
-      /* setLocalHour(data.datetime.split('T')[1].split('.')[0]); */
-      setLocalHour(data?.datetime?.split('T')[1].split('.')[0]);
-      setOffsetUTC(parseInt(data.utc_offset));
+      // Extract city from timezone (e.g., "America/Bogota" -> "Bogota")
+      const city = timeZone.split('/').pop();
+      
+      // Using axios which is already in the project dependencies
+      const response = await fetch(`https://api.apiverve.com/v1/worldtime?city=${city}`, {
+        headers: {
+          'x-api-key': 'b904b5b8-ecc5-4bfc-adf5-3511279dbeef',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      
+      const responseData = await response.json();
+      
+      if (responseData.status !== 'ok' || !responseData.data || !responseData.data.foundCities || responseData.data.foundCities.length === 0) {
+        throw new Error('No time data found for this city');
+      }
+      
+      // Use the first city in the response
+      const data = responseData.data.foundCities[0];
+      
+      // Format the time to match the expected format (HH:MM:SS)
+      // Ensure we have seconds in the time format
+      if (data.time24.split(':').length === 2) {
+        // If time24 is in format HH:MM, add seconds
+        setLocalHour(`${data.time24}:00`);
+      } else {
+        setLocalHour(data.time24);
+      }
+      
+      // Extract UTC offset from timezone info
+      // The API returns the offset in a different format, so we need to parse it
+      // DST name like "-03" or "PDT" contains the offset information
+      const offsetStr = data.dst_name;
+      let offset;
+      
+      if (offsetStr.startsWith('-') || offsetStr.startsWith('+')) {
+        // If it's a direct offset like "-03"
+        offset = parseInt(offsetStr);
+      } else {
+        // For named timezones like "PDT" (UTC-7), "EST" (UTC-5), etc.
+        // We need to map these to their UTC offsets
+        const timezoneMap = {
+          'PDT': -7, 'PST': -8, 'EDT': -4, 'EST': -5, 'CDT': -5, 'CST': -6, 
+          'MDT': -6, 'MST': -7, 'AKDT': -8, 'AKST': -9, 'HDT': -9, 'HST': -10
+        };
+        offset = timezoneMap[offsetStr] || 0;
+      }
+      
+      setOffsetUTC(offset);
     } catch (err) {
+      console.error('Error fetching time data:', err);
       setError('Error getting the timezone information');
+      
+      // Fallback: Use local browser time as a backup
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+      const localTimeString = `${hours}:${minutes}:${seconds}`;
+      
+      setLocalHour(localTimeString);
+      
+      // Estimate UTC offset from local browser
+      const offsetInHours = -now.getTimezoneOffset() / 60;
+      setOffsetUTC(offsetInHours);
+      
+      console.log('Using fallback local time:', localTimeString, 'with offset:', offsetInHours);
     }
   };
 
